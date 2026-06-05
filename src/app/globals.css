@@ -1,26 +1,169 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* =====================================================================
+   문신패스 디자인 시스템 — "집중 모드 (Calm Focus)"
+   장시간 학습용: 가독성 + 눈 피로 저감에 초점
+   - 순백/순흑 금지(눈부심·헐레이션 저감) → 따뜻한 종이톤 + 소프트 차콜
+   - 한글 장문에 맞춘 넉넉한 행간 / 읽기 폭 제한 / keep-all 줄바꿈
+   ===================================================================== */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root {
+  color-scheme: light;
+
+  /* 표면 */
+  --background: #f7f6f3;   /* 페이지: 따뜻한 종이톤 */
+  --surface: #ffffff;      /* 카드 */
+  --surface-2: #fbfaf7;    /* 보조 표면 */
+  --foreground: #20242e;   /* 본문(순흑 대신 소프트 차콜) */
+  --muted: #59616f;        /* 보조 텍스트 */
+  --subtle: #8b919d;       /* 더 옅은 보조 */
+  --border: #eae8e2;       /* 보더 */
+  --border-strong: #ddd9d0;
+
+  /* 브랜드 */
+  --primary: #4f46e5;      /* 인디고 */
+  --primary-hover: #4338ca;
+  --primary-soft: #eef0fe; /* 연한 배경 */
+  --on-primary: #ffffff;
+
+  /* 의미색 */
+  --success: #0f9d6e;      /* 정답·세션 */
+  --success-soft: #e6f6ef;
+  --danger: #e11d48;       /* 오답 */
+  --danger-soft: #fce9ee;
+  --warning: #d97706;
+  --warning-soft: #fdf1e3;
+
+  /* 형태 */
+  --radius: 1rem;
+  --shadow-sm: 0 1px 2px rgba(31, 36, 46, 0.04), 0 1px 3px rgba(31, 36, 46, 0.05);
+  --shadow-md: 0 2px 6px rgba(31, 36, 46, 0.05), 0 8px 24px rgba(31, 36, 46, 0.07);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    color-scheme: dark;
+
+    --background: #14161c;   /* 순흑 대신 딥 슬레이트 */
+    --surface: #1c1f27;
+    --surface-2: #20242d;
+    --foreground: #e6e8ec;   /* 순백 대신(헐레이션 저감) */
+    --muted: #9aa2b1;
+    --subtle: #6b7382;
+    --border: #282c36;
+    --border-strong: #353b48;
+
+    --primary: #818cf8;
+    --primary-hover: #a5b4fc;
+    --primary-soft: #232648;
+    --on-primary: #14161c;
+
+    --success: #34d399;
+    --success-soft: #11271e;
+    --danger: #fb7185;
+    --danger-soft: #321a22;
+    --warning: #fbbf24;
+    --warning-soft: #2e2410;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-on-primary: var(--on-primary);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+
+  --radius-card: var(--radius);
+  --shadow-card: var(--shadow-sm);
+  --shadow-pop: var(--shadow-md);
+
+  --font-sans: var(--font-pretendard), -apple-system, BlinkMacSystemFont,
+    "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+}
+
+/* ============ Base — 장문 가독성 / 피로 저감 ============ */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+/* 기본 폰트 스케일을 키워 가독성 확보 (rem 기반 유틸 전체가 함께 커짐) */
+html {
+  font-size: 17px;
+}
+/* 데스크톱(큰 화면)에서는 더 크게 — 멀리서도 또렷하게 */
+@media (min-width: 1024px) {
+  html {
+    font-size: 19px;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 1rem;
+  line-height: 1.7;          /* 한글 본문 행간 넉넉히 */
+  letter-spacing: -0.003em;
+  word-break: keep-all;      /* 한글 단어 단위 줄바꿈 → 가독성 */
+}
+
+/* 제목: 살짝 타이트한 트래킹/행간 */
+h1, h2, h3, h4 {
+  letter-spacing: -0.021em;
+  line-height: 1.32;
+}
+
+/* 숫자(타이머·D-Day·점수·통계) 정렬용 */
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* 긴 지문·해설 읽기 영역: 더 큰 글자 + 넓은 행간 + 읽기 폭 제한 */
+.prose-read {
+  font-size: 1.0625rem;      /* 17px */
+  line-height: 1.85;
+  letter-spacing: -0.002em;
+  max-width: 42rem;          /* 한 줄이 너무 길지 않게(피로 저감) */
+}
+
+/* 접근성: 키보드 포커스 링 */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* 모션 민감 사용자 배려 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

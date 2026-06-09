@@ -61,6 +61,32 @@ export function getAnswers(): AnswerRecord[] {
   return read().answers
 }
 
+/** 답안 식별 키(초 단위) — 로컬·서버 중복 판별용 */
+export function answerKey(a: AnswerRecord): string {
+  return a.questionId + '|' + Math.floor(a.at / 1000)
+}
+
+/** 외부(서버) 답안을 로컬과 병합(중복 제거 후 저장). 병합된 전체 배열 반환 */
+export function mergeAnswers(incoming: AnswerRecord[]): AnswerRecord[] {
+  const data = read()
+  if (!incoming.length) return data.answers
+  const seen = new Set(data.answers.map(answerKey))
+  let changed = false
+  for (const a of incoming) {
+    if (!a || !a.questionId) continue
+    const k = answerKey(a)
+    if (seen.has(k)) continue
+    seen.add(k)
+    data.answers.push(a)
+    changed = true
+  }
+  if (changed) {
+    data.answers.sort((x, y) => x.at - y.at)
+    write(data)
+  }
+  return data.answers
+}
+
 /** 같은 날짜(로컬)인지 비교 */
 function isToday(ts: number) {
   const d = new Date(ts)

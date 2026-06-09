@@ -13,6 +13,7 @@ import {
   IconTimer,
 } from '@/components/icons'
 import { BottomNav, type NavItem } from './app-nav'
+import { ProgressSync } from '@/components/progress-sync'
 
 export default async function AppShellLayout({
   children,
@@ -50,6 +51,7 @@ export default async function AppShellLayout({
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
+      <ProgressSync />
       {/* 헤더 (로고 + 사용자 — 메뉴는 홈 퀵메뉴로 이동) */}
       <header className="sticky top-0 z-40 border-b border-border bg-surface/85 backdrop-blur-md">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">

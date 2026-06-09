@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { SUBJECTS, getSubjectCount } from '@/data/questions'
-import { IconBook, IconBookmark, IconCards, IconChart, IconChecklist, IconChevronRight, IconFileText, IconPencil, IconRefresh, IconSearch, SUBJECT_ICON } from '@/components/icons'
+import { IconBook, IconBookmark, IconCalendar, IconCards, IconChart, IconChecklist, IconChevronRight, IconFileText, IconPencil, IconRefresh, IconSearch, SUBJECT_ICON } from '@/components/icons'
 
 export const metadata: Metadata = {
   title: '과목별 학습 | 문신패스',
@@ -18,6 +18,8 @@ export default function StudyPage() {
           { href: '/study/search', label: '검색', Icon: IconSearch },
           { href: '/study/review', label: '복습', Icon: IconRefresh },
           { href: '/study/flashcards', label: '카드', Icon: IconCards },
+          { href: '/study/planner', label: '플래너', Icon: IconCalendar },
+          { href: '/study/glossary', label: '용어', Icon: IconBook },
           { href: '/study/stats', label: '통계', Icon: IconChart },
           { href: '/study/bookmarks', label: '북마크', Icon: IconBookmark },
         ].map(({ href, label, Icon }) => (

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { SUBJECTS, getSubjectCount } from '@/data/questions'
-import { IconBook, IconChecklist, IconChevronRight, IconFileText, IconPencil, SUBJECT_ICON } from '@/components/icons'
+import { IconBook, IconBookmark, IconChecklist, IconChevronRight, IconFileText, IconPencil, SUBJECT_ICON } from '@/components/icons'
 
 export const metadata: Metadata = {
   title: '과목별 학습 | 문신패스',
@@ -11,7 +11,16 @@ export const metadata: Metadata = {
 export default function StudyPage() {
   return (
     <div className="py-6">
-      <h1 className="text-xl font-bold mb-1">과목별 학습</h1>
+      <div className="flex items-center justify-between mb-1">
+        <h1 className="text-xl font-bold">과목별 학습</h1>
+        <Link
+          href="/study/bookmarks"
+          className="inline-flex items-center gap-1.5 text-sm text-primary font-medium hover:underline"
+        >
+          <IconBookmark size={15} />
+          북마크
+        </Link>
+      </div>
       <p className="text-sm text-muted mb-5">과목을 선택해 문제를 풀어보세요.</p>
 
       {/* 전체 교과서 */}

@@ -4,8 +4,10 @@ import { useState } from 'react'
 import Link from 'next/link'
 import type { Question, SubjectMeta } from '@/data/questions'
 import { recordAnswer } from '@/lib/progress'
+import { useIsBookmarked, toggleBookmark } from '@/lib/bookmarks'
 import {
   IconArrowRight,
+  IconBookmark,
   IconCheck,
   IconRefresh,
   IconTrophy,
@@ -144,7 +146,10 @@ export function Quiz({
 
       {/* 문제 카드 */}
       <div className="rounded-2xl border border-border bg-surface shadow-[var(--shadow-card)] p-5 sm:p-6">
-        <p className="prose-read font-medium">{current.question}</p>
+        <div className="flex items-start justify-between gap-3">
+          <p className="prose-read font-medium">{current.question}</p>
+          <BookmarkButton id={current.id} />
+        </div>
 
         <div className="mt-5 space-y-2.5">
           {current.choices.map((choice, ci) => (
@@ -226,6 +231,25 @@ function choiceState(
     return 'dim'
   }
   return picked === ci ? 'picked' : 'idle'
+}
+
+function BookmarkButton({ id }: { id: string }) {
+  const on = useIsBookmarked(id)
+  return (
+    <button
+      type="button"
+      onClick={() => toggleBookmark(id)}
+      aria-label={on ? '북마크 해제' : '북마크 추가'}
+      aria-pressed={on}
+      className={`shrink-0 grid place-items-center h-9 w-9 rounded-xl border transition-colors cursor-pointer ${
+        on
+          ? 'border-primary bg-primary-soft text-primary'
+          : 'border-border text-subtle hover:text-foreground'
+      }`}
+    >
+      <IconBookmark size={17} fill={on ? 'currentColor' : 'none'} />
+    </button>
+  )
 }
 
 function ChoiceButton({

@@ -99,6 +99,11 @@ export const IconHeartPulse = (p: IconProps) => (
     <path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27" />
   </Svg>
 )
+export const IconBookmark = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+  </Svg>
+)
 
 /* ── 범용 ── */
 export const IconArrowRight = (p: IconProps) => (

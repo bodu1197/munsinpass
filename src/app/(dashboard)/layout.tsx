@@ -4,6 +4,7 @@ import { isSupabaseConfigured } from '@/utils/supabase/config'
 import Link from 'next/link'
 import {
   IconBook,
+  IconBookmark,
   IconChecklist,
   IconGraduationCap,
   IconHome,
@@ -45,6 +46,7 @@ export default async function AppShellLayout({
     { href: '/study', label: '학습', icon: <IconBook size={20} /> },
     { href: '/mock-exam', label: '모의고사', icon: <IconTimer size={20} /> },
     { href: '/study/wrong-answers', label: '오답노트', icon: <IconSparkles size={20} /> },
+    { href: '/study/bookmarks', label: '북마크', icon: <IconBookmark size={20} /> },
   ]
 
   return (

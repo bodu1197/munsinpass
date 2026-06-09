@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CURRICULUM, getPart } from '@/data/curriculum'
 import type { TheoryTable } from '@/data/theory'
+import { CHAPTER_FIGURES } from '@/data/figures'
 import { IconArrowRight, IconCheck, IconChevronRight } from '@/components/icons'
 
 type Params = Promise<{ part: string }>
@@ -120,6 +121,25 @@ export default async function TextbookPartPage({ params }: { params: Params }) {
             </div>
 
             {c.table && <Table table={c.table} />}
+
+            {(() => {
+              const fig = c.figure ?? CHAPTER_FIGURES[c.heading]
+              return fig ? (
+                <figure className="mt-5">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={fig.src}
+                    alt={fig.alt}
+                    loading="lazy"
+                    className="w-full max-w-xl mx-auto rounded-xl border border-border bg-white"
+                  />
+                  <figcaption className="mt-2 text-center text-xs text-subtle">
+                    {fig.caption ?? fig.alt}
+                    <span className="ml-1">· 학습용 일러스트</span>
+                  </figcaption>
+                </figure>
+              ) : null
+            })()}
 
             {c.sections?.map((s, si) => (
               <div key={si} className="mt-6">

@@ -40,3 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .gstack/
+
+# 임시 산출물(도해 스파이크 등)
+.tmp/

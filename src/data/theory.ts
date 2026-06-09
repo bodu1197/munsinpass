@@ -17,11 +17,22 @@ export interface TheorySubsection {
   table?: TheoryTable
 }
 
+export interface TheoryFigure {
+  /** public 기준 이미지 경로 (예: /figures/skull.png) */
+  src: string
+  /** 대체 텍스트(접근성) */
+  alt: string
+  /** 그림 설명 캡션 */
+  caption?: string
+}
+
 export interface TheoryChapter {
   heading: string
   paragraphs: string[]
   /** 책 깊이의 상세 소단원(하위 절) */
   sections?: TheorySubsection[]
+  /** 단원 도해(학습용 일러스트) */
+  figure?: TheoryFigure
   keyPoints?: string[]
   table?: TheoryTable
 }

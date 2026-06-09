@@ -2,6 +2,8 @@
 // ⚠️ 본 문항은 학습용으로 작성된 예상문제이며, 실제 국가시험 문제와 다를 수 있습니다.
 // 문신사법은 2025.10.28 공포 / 2027 시행 예정으로, 세부 출제기준은 향후 확정됩니다.
 
+import { GENERATED_QUESTIONS } from './generated-questions'
+
 export type SubjectKey = 'hygiene' | 'law' | 'ink_material' | 'anatomy'
 
 export type QuestionDifficulty = 1 | 2 | 3 // 1 하 · 2 중 · 3 상
@@ -67,7 +69,7 @@ export const SUBJECT_TO_PARTS: Record<SubjectKey, string[]> = {
   law: ['public-health', 'intro', 'consult'],
 }
 
-export const QUESTIONS: Question[] = [
+const SEED_QUESTIONS: Question[] = [
   // ───────────────────────── 위생·감염 관리 ─────────────────────────
   {
     id: 'hygiene-001',
@@ -596,6 +598,9 @@ export const QUESTIONS: Question[] = [
       '피하조직은 지방으로 이루어져 단열·완충·에너지 저장 기능을 합니다. 문신 색소가 안착되는 층은 피하조직이 아니라 진피입니다.',
   },
 ]
+
+/** 수록(seed) + 자동 생성(검증 통과) 문항 통합 은행 */
+export const QUESTIONS: Question[] = [...SEED_QUESTIONS, ...GENERATED_QUESTIONS]
 
 export function getQuestionsBySubject(subject: SubjectKey): Question[] {
   return QUESTIONS.filter((q) => q.subject === subject)

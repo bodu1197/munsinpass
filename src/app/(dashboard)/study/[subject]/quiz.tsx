@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import type { Question, SubjectMeta } from '@/data/questions'
 import { recordAnswer } from '@/lib/progress'
@@ -35,11 +35,16 @@ export function Quiz({
   initialMode: Mode
 }) {
   const [mode, setMode] = useState<Mode>(initialMode)
-  const [ordered, setOrdered] = useState<Question[]>(() => shuffle(questions))
+  // SSR/첫 렌더는 원래 순서(셔플 X) → 하이드레이션 불일치(React #418) 방지, 마운트 후 셔플
+  const [ordered, setOrdered] = useState<Question[]>(questions)
   const [idx, setIdx] = useState(0)
   const [selected, setSelected] = useState<(number | null)[]>(() => questions.map(() => null))
   const [revealed, setRevealed] = useState<boolean[]>(() => questions.map(() => false))
   const [finished, setFinished] = useState(false)
+
+  useEffect(() => {
+    setOrdered((prev) => shuffle(prev))
+  }, [])
 
   const total = ordered.length
   const current = ordered[idx]

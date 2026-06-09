@@ -104,6 +104,12 @@ export const IconBookmark = (p: IconProps) => (
     <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
   </Svg>
 )
+export const IconSearch = (p: IconProps) => (
+  <Svg {...p}>
+    <circle cx="11" cy="11" r="8" />
+    <path d="m21 21-4.3-4.3" />
+  </Svg>
+)
 
 /* ── 범용 ── */
 export const IconArrowRight = (p: IconProps) => (

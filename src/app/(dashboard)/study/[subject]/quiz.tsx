@@ -4,10 +4,9 @@ import { useState } from 'react'
 import Link from 'next/link'
 import type { Question, SubjectMeta } from '@/data/questions'
 import { recordAnswer } from '@/lib/progress'
-import { useIsBookmarked, toggleBookmark } from '@/lib/bookmarks'
+import { BookmarkButton } from '@/components/bookmark-button'
 import {
   IconArrowRight,
-  IconBookmark,
   IconCheck,
   IconRefresh,
   IconTrophy,
@@ -231,25 +230,6 @@ function choiceState(
     return 'dim'
   }
   return picked === ci ? 'picked' : 'idle'
-}
-
-function BookmarkButton({ id }: { id: string }) {
-  const on = useIsBookmarked(id)
-  return (
-    <button
-      type="button"
-      onClick={() => toggleBookmark(id)}
-      aria-label={on ? '북마크 해제' : '북마크 추가'}
-      aria-pressed={on}
-      className={`shrink-0 grid place-items-center h-9 w-9 rounded-xl border transition-colors cursor-pointer ${
-        on
-          ? 'border-primary bg-primary-soft text-primary'
-          : 'border-border text-subtle hover:text-foreground'
-      }`}
-    >
-      <IconBookmark size={17} fill={on ? 'currentColor' : 'none'} />
-    </button>
-  )
 }
 
 function ChoiceButton({

@@ -79,6 +79,14 @@ export default async function TextbookPartPage({ params }: { params: Params }) {
       </h1>
       <p className="text-sm text-muted mt-1">{p.summary}</p>
 
+      <Link
+        href={`/study/search?part=${p.id}`}
+        className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+      >
+        이 단원 관련 예상문제 풀기
+        <IconArrowRight size={15} />
+      </Link>
+
       {/* 목차 */}
       <nav className="mt-5 rounded-2xl border border-border bg-surface p-4">
         <p className="text-xs font-semibold text-subtle mb-2">목차</p>

@@ -77,6 +77,7 @@ export function Search() {
         value={keyword}
         onChange={(e) => setKeyword(e.target.value)}
         placeholder="키워드로 검색 (문제·보기·해설)"
+        aria-label="문제 검색"
         className={inputClass}
       />
 

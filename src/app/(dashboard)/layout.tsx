@@ -51,6 +51,12 @@ export default async function AppShellLayout({
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:rounded-xl focus:bg-primary focus:text-on-primary focus:text-sm focus:font-semibold"
+      >
+        본문 바로가기
+      </a>
       <ProgressSync />
       {/* 헤더 (로고 + 사용자 — 메뉴는 홈 퀵메뉴로 이동) */}
       <header className="sticky top-0 z-40 border-b border-border bg-surface/85 backdrop-blur-md">
@@ -75,6 +81,7 @@ export default async function AppShellLayout({
                 <form action={logout}>
                   <button
                     type="submit"
+                    aria-label="로그아웃"
                     className="flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors cursor-pointer"
                   >
                     <IconLogout size={16} />
@@ -104,7 +111,7 @@ export default async function AppShellLayout({
 
       {/* 본문 (사이드바 제거, 중앙 정렬 — 너비/좌우 여백의 단일 기준) */}
       <div className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6">
-        <main className="pb-24 md:pb-12">{children}</main>
+        <main id="main-content" className="pb-24 md:pb-12">{children}</main>
       </div>
 
       {/* 모바일 하단 탭 (데스크톱에선 숨김 — 상단 메뉴 사용) */}

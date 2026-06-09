@@ -249,7 +249,12 @@ export default function Home() {
       {/* 푸터 */}
       <footer className="border-t border-border py-8 mt-2 text-center text-sm text-subtle">
         <p>문신패스 · 문신사 국가시험 학습 서비스</p>
-        <p className="mt-1">© 2026 MuShinPass</p>
+        <div className="mt-2 flex items-center justify-center gap-3">
+          <Link href="/legal/terms" className="hover:text-primary transition-colors">이용약관</Link>
+          <span className="text-border-strong">·</span>
+          <Link href="/legal/privacy" className="hover:text-primary transition-colors">개인정보처리방침</Link>
+        </div>
+        <p className="mt-2">© 2026 MuShinPass</p>
       </footer>
     </div>
   );

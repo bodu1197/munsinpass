@@ -1,6 +1,7 @@
 'use client'
 
 import { useActionState } from 'react'
+import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { login, type AuthState } from '@/app/actions/auth'
 
@@ -75,6 +76,12 @@ export function LoginForm() {
       >
         {pending ? '로그인 중…' : '로그인'}
       </button>
+
+      <p className="text-center text-sm text-muted">
+        <Link href="/auth/forgot-password" className="hover:text-primary transition-colors">
+          비밀번호를 잊으셨나요?
+        </Link>
+      </p>
     </form>
   )
 }

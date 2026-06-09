@@ -17,6 +17,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/notice', priority: 0.7, freq: 'weekly' },
     { path: '/community', priority: 0.6, freq: 'daily' },
     { path: '/auth/signup', priority: 0.4, freq: 'monthly' },
+    { path: '/legal/terms', priority: 0.3, freq: 'yearly' },
+    { path: '/legal/privacy', priority: 0.3, freq: 'yearly' },
   ]
 
   const partRoutes = CURRICULUM.map((p) => ({

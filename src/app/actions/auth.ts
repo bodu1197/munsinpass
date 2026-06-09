@@ -104,6 +104,29 @@ export async function signup(_prev: AuthState, formData: FormData): Promise<Auth
   redirect('/dashboard')
 }
 
+export async function requestPasswordReset(_prev: AuthState, formData: FormData): Promise<AuthState> {
+  if (!isSupabaseConfigured()) {
+    return { error: NOT_CONFIGURED }
+  }
+  const email = getString(formData, 'email')
+  if (!email) {
+    return { error: '이메일을 입력해주세요.' }
+  }
+  const supabase = await createClient()
+  const h = await headers()
+  const origin = h.get('origin') ?? (h.get('host') ? `https://${h.get('host')}` : '')
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: origin ? `${origin}/auth/reset` : undefined,
+  })
+  if (error) {
+    return { error: '재설정 메일 전송에 실패했습니다. 잠시 후 다시 시도해주세요.' }
+  }
+  // 계정 존재 여부를 노출하지 않도록 항상 동일한 안내를 반환
+  return {
+    message: '입력하신 이메일로 비밀번호 재설정 링크를 보냈습니다. 메일을 확인해 새 비밀번호를 설정하세요.',
+  }
+}
+
 export async function logout() {
   if (isSupabaseConfigured()) {
     const supabase = await createClient()

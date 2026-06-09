@@ -1,9 +1,7 @@
-"use client";
-
 import Link from "next/link";
-import { useHydrated } from "@/lib/progress";
 import { QUESTIONS } from "@/data/questions";
 import { NEWS } from "@/data/news";
+import { getPublishedNews } from "@/lib/news/store";
 import {
   IconArrowRight,
   IconBell,
@@ -28,6 +26,13 @@ function daysUntilExam() {
     0,
     Math.ceil((examDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
   );
+}
+
+function fmtDate(iso: string | null): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
 }
 
 // 개인화: 로그인해야 이용 가능 — "이걸 쓰면 합격에 가까워진다"를 설명
@@ -86,9 +91,29 @@ const TIMELINE = [
   { date: "2027 말", label: "첫 국가시험 시행 예정", done: false },
 ];
 
-export default function Home() {
-  const hydrated = useHydrated();
-  const dday = hydrated ? daysUntilExam() : null;
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const dday = daysUntilExam();
+
+  // 게시된 최신 뉴스(자동 수집·승인분). 없으면 정적 시드로 폴백.
+  const published = await getPublishedNews(5);
+  const newsItems =
+    published.length > 0
+      ? published.map((n) => ({
+          key: n.slug,
+          href: `/news/${n.slug}`,
+          title: n.title,
+          summary: n.summary,
+          date: fmtDate(n.publishedAt),
+        }))
+      : NEWS.slice(0, 5).map((n) => ({
+          key: n.id,
+          href: "/news",
+          title: n.title,
+          summary: n.summary,
+          date: n.date,
+        }));
 
   return (
     <div className="pt-2">
@@ -129,7 +154,7 @@ export default function Home() {
         <div className="rounded-3xl border border-border bg-surface shadow-[var(--shadow-pop)] p-7 lg:p-9">
           <p className="text-sm text-muted">첫 국가시험까지</p>
           <p className="tabular text-6xl lg:text-7xl font-bold text-primary leading-none mt-2">
-            {dday !== null ? `D-${dday}` : "D-—"}
+            {`D-${dday}`}
           </p>
           <p className="text-sm text-subtle mt-2">2027년 12월 시행 예정 기준</p>
           <div className="mt-6 grid grid-cols-2 gap-3">
@@ -202,10 +227,10 @@ export default function Home() {
           </Link>
         </div>
         <ul className="rounded-2xl border border-border bg-surface overflow-hidden divide-y divide-border">
-          {NEWS.slice(0, 5).map((n) => (
-            <li key={n.id}>
+          {newsItems.map((n) => (
+            <li key={n.key}>
               <Link
-                href="/news"
+                href={n.href}
                 className="flex items-start gap-4 px-5 py-4 hover:bg-surface-2 transition-colors"
               >
                 <span className="grid place-items-center h-9 w-9 shrink-0 rounded-lg bg-primary-soft text-primary">

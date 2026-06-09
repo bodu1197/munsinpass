@@ -110,6 +110,12 @@ export const IconSearch = (p: IconProps) => (
     <path d="m21 21-4.3-4.3" />
   </Svg>
 )
+export const IconCards = (p: IconProps) => (
+  <Svg {...p}>
+    <rect width="13" height="13" x="8" y="8" rx="2" />
+    <path d="M4 16V6a2 2 0 0 1 2-2h10" />
+  </Svg>
+)
 
 /* ── 범용 ── */
 export const IconArrowRight = (p: IconProps) => (

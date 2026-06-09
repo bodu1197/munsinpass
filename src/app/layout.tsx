@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
+import { ServiceWorkerRegister } from "@/components/sw-register";
 
 // Pretendard Variable — 한글 화면 장문 가독성 최적화 (프로젝트 내장, 오프라인 안전)
 const pretendard = localFont({
@@ -53,6 +54,7 @@ export default function RootLayout({
   return (
     <html lang="ko" className={`${pretendard.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
+        <ServiceWorkerRegister />
         {children}
       </body>
     </html>

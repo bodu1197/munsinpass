@@ -31,6 +31,11 @@ export const metadata: Metadata = {
     locale: "ko_KR",
     type: "website",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} - 문신사 국가시험 대비`,
+    description: "2027년 문신사 국가시험, 합격까지 한 곳에서 준비하세요.",
+  },
 };
 
 export const viewport: Viewport = {

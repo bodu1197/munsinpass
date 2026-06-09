@@ -41,7 +41,7 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // 공용(공지·뉴스)과 랜딩/인증만 개방, 나머지 학습 영역과 관리자는 로그인 필수.
-  const PROTECTED_PREFIXES = ['/dashboard', '/study', '/mock-exam', '/guide', '/admin', '/settings']
+  const PROTECTED_PREFIXES = ['/dashboard', '/study', '/mock-exam', '/guide', '/admin', '/settings', '/onboarding']
   const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p))
 
   if (isProtected && !user) {

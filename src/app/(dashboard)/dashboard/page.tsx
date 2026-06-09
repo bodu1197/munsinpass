@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { SUBJECTS } from '@/data/questions'
 import { DashboardStats } from './dashboard-stats'
+import { WelcomeCard } from './welcome-card'
 import { IconChevronRight, IconSparkles, IconTimer, SUBJECT_ICON } from '@/components/icons'
 
 export const metadata: Metadata = {
@@ -23,6 +24,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="py-6 space-y-7">
+      <WelcomeCard />
       {/* D-Day + 오늘 학습 현황 (localStorage 기반, 클라이언트 렌더) */}
       <DashboardStats />
 

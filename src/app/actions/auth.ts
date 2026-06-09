@@ -101,7 +101,7 @@ export async function signup(_prev: AuthState, formData: FormData): Promise<Auth
     }
   }
 
-  redirect('/dashboard')
+  redirect('/onboarding')
 }
 
 export async function requestPasswordReset(_prev: AuthState, formData: FormData): Promise<AuthState> {

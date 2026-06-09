@@ -66,6 +66,12 @@ export default async function AppShellLayout({
             {user ? (
               <>
                 <span className="text-sm text-muted hidden lg:block">{nickname}님</span>
+                <Link
+                  href="/settings"
+                  className="text-sm text-muted hover:text-foreground transition-colors"
+                >
+                  설정
+                </Link>
                 <form action={logout}>
                   <button
                     type="submit"

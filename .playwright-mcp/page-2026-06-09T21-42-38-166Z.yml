@@ -1,0 +1,194 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - link "문신패스" [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img [ref=e7]
+          - text: 문신패스
+        - generic [ref=e10]:
+          - link "로그인" [ref=e11] [cursor=pointer]:
+            - /url: /auth/login
+          - link "회원가입" [ref=e12] [cursor=pointer]:
+            - /url: /auth/signup
+    - main [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e16]:
+          - generic [ref=e17]:
+            - generic [ref=e18]: 2027 문신사 국가시험 대비
+            - heading "합격까지 함께, 문신패스" [level=1] [ref=e20]:
+              - text: 합격까지 함께,
+              - text: 문신패스
+            - paragraph [ref=e21]: 과목별 문제풀이부터 실전 모의고사, AI 오답노트까지. 합격에 필요한 학습을 한 곳에서.
+            - generic [ref=e22]:
+              - link "지금 시작하기" [ref=e23] [cursor=pointer]:
+                - /url: /auth/signup
+                - text: 지금 시작하기
+                - img [ref=e24]
+              - link "최신 소식 보기" [ref=e26] [cursor=pointer]:
+                - /url: /news
+          - generic [ref=e27]:
+            - paragraph [ref=e28]: 첫 국가시험까지
+            - paragraph [ref=e29]: D-540
+            - paragraph [ref=e30]: 2027년 12월 시행 예정 기준
+            - generic [ref=e31]:
+              - generic [ref=e32]:
+                - paragraph [ref=e33]: "4"
+                - paragraph [ref=e34]: 출제 과목
+              - generic [ref=e35]:
+                - paragraph [ref=e36]: "248"
+                - paragraph [ref=e37]: 수록 문항
+        - generic [ref=e39]:
+          - link "교과서" [ref=e40] [cursor=pointer]:
+            - /url: /textbook
+            - img [ref=e42]
+            - generic [ref=e45]: 교과서
+          - link "커뮤니티" [ref=e46] [cursor=pointer]:
+            - /url: /community
+            - img [ref=e48]
+            - generic [ref=e50]: 커뮤니티
+          - link "공지사항" [ref=e51] [cursor=pointer]:
+            - /url: /notice
+            - img [ref=e53]
+            - generic [ref=e56]: 공지사항
+          - link "뉴스" [ref=e57] [cursor=pointer]:
+            - /url: /news
+            - img [ref=e59]
+            - generic [ref=e62]: 뉴스
+          - link "자주 묻는 질문" [ref=e63] [cursor=pointer]:
+            - /url: /faq
+            - img [ref=e65]
+            - generic [ref=e68]: 자주 묻는 질문
+        - generic [ref=e69]:
+          - heading "로그인하면 이런 학습이 가능합니다" [level=2] [ref=e70]
+          - paragraph [ref=e71]: 회원가입 후 아래 기능으로 약점을 줄이고 합격에 다가가세요.
+          - generic [ref=e72]:
+            - link "로그인 과목별 문제풀이 위생·법규·색소·해부 전 과목을 학습/시험 모드로. 약한 과목을 집중 공략해 합격선까지 끌어올립니다." [ref=e73] [cursor=pointer]:
+              - /url: /study
+              - generic [ref=e74]:
+                - img [ref=e76]
+                - generic [ref=e78]:
+                  - img [ref=e79]
+                  - text: 로그인
+              - heading "과목별 문제풀이" [level=3] [ref=e82]
+              - paragraph [ref=e83]: 위생·법규·색소·해부 전 과목을 학습/시험 모드로. 약한 과목을 집중 공략해 합격선까지 끌어올립니다.
+            - link "로그인 실전 모의고사 실제 시험처럼 제한 시간 안에 풀고 자동 채점. 과목별 점수 분석으로 합격 가능성을 점검합니다." [ref=e84] [cursor=pointer]:
+              - /url: /mock-exam
+              - generic [ref=e85]:
+                - img [ref=e87]
+                - generic [ref=e90]:
+                  - img [ref=e91]
+                  - text: 로그인
+              - heading "실전 모의고사" [level=3] [ref=e94]
+              - paragraph [ref=e95]: 실제 시험처럼 제한 시간 안에 풀고 자동 채점. 과목별 점수 분석으로 합격 가능성을 점검합니다.
+            - link "로그인 AI 오답노트 틀린 문제만 자동으로 모아 반복 학습. 약점을 없애 점수를 빠르게 올립니다." [ref=e96] [cursor=pointer]:
+              - /url: /study/wrong-answers
+              - generic [ref=e97]:
+                - img [ref=e99]
+                - generic [ref=e101]:
+                  - img [ref=e102]
+                  - text: 로그인
+              - heading "AI 오답노트" [level=3] [ref=e105]
+              - paragraph [ref=e106]: 틀린 문제만 자동으로 모아 반복 학습. 약점을 없애 점수를 빠르게 올립니다.
+            - link "로그인 실기 체크리스트 위생 순서·기구 세팅을 단계별로 암기. 필기뿐 아니라 실기까지 빈틈없이 대비합니다." [ref=e107] [cursor=pointer]:
+              - /url: /study/checklist
+              - generic [ref=e108]:
+                - img [ref=e110]
+                - generic [ref=e113]:
+                  - img [ref=e114]
+                  - text: 로그인
+              - heading "실기 체크리스트" [level=3] [ref=e117]
+              - paragraph [ref=e118]: 위생 순서·기구 세팅을 단계별로 암기. 필기뿐 아니라 실기까지 빈틈없이 대비합니다.
+            - link "로그인 학습 대시보드 D-Day·정답률·과목별 진행률을 한눈에. 매일의 학습 흐름을 관리합니다." [ref=e119] [cursor=pointer]:
+              - /url: /dashboard
+              - generic [ref=e120]:
+                - img [ref=e122]
+                - generic [ref=e125]:
+                  - img [ref=e126]
+                  - text: 로그인
+              - heading "학습 대시보드" [level=3] [ref=e129]
+              - paragraph [ref=e130]: D-Day·정답률·과목별 진행률을 한눈에. 매일의 학습 흐름을 관리합니다.
+            - link "로그인 시험 안내 시험 일정·과목·합격 기준·FAQ를 정리. 무엇을 언제 준비할지 명확해집니다." [ref=e131] [cursor=pointer]:
+              - /url: /guide
+              - generic [ref=e132]:
+                - img [ref=e134]
+                - generic [ref=e136]:
+                  - img [ref=e137]
+                  - text: 로그인
+              - heading "시험 안내" [level=3] [ref=e140]
+              - paragraph [ref=e141]: 시험 일정·과목·합격 기준·FAQ를 정리. 무엇을 언제 준비할지 명확해집니다.
+        - generic [ref=e142]:
+          - generic [ref=e143]:
+            - heading "최신 뉴스" [level=2] [ref=e144]
+            - link "전체 보기" [ref=e145] [cursor=pointer]:
+              - /url: /news
+          - list [ref=e146]:
+            - listitem [ref=e147]:
+              - link "\"비의료인 문신, 무면허 의료행위 아니다\" 비의료인이 문신을 하는 것은 무면허 의료행위가 아니라는 주장이 제기되었습니다. 2026.06.09" [ref=e148] [cursor=pointer]:
+                - /url: /news/2026-05-22-ec4169ff
+                - img [ref=e150]
+                - generic [ref=e153]:
+                  - paragraph [ref=e154]: "\"비의료인 문신, 무면허 의료행위 아니다\""
+                  - paragraph [ref=e155]: 비의료인이 문신을 하는 것은 무면허 의료행위가 아니라는 주장이 제기되었습니다.
+                - generic [ref=e156]: 2026.06.09
+            - listitem [ref=e157]:
+              - link "‘무면허’ 족쇄 벗은 미용 문신…타투유니온 “노동권·표현의 자유 확인했다” 미용 문신에 대한 무면허 규제가 해제되었으며, 타투유니온은 이를 통해 노동권과 표현의 자유가 확인되었다고 밝혔습니다. 2026.06.09" [ref=e158] [cursor=pointer]:
+                - /url: /news/2026-05-23-2c67c29f
+                - img [ref=e160]
+                - generic [ref=e163]:
+                  - paragraph [ref=e164]: ‘무면허’ 족쇄 벗은 미용 문신…타투유니온 “노동권·표현의 자유 확인했다”
+                  - paragraph [ref=e165]: 미용 문신에 대한 무면허 규제가 해제되었으며, 타투유니온은 이를 통해 노동권과 표현의 자유가 확인되었다고 밝혔습니다.
+                - generic [ref=e166]: 2026.06.09
+            - listitem [ref=e167]:
+              - link "문신 합법화 논의 속 그레이시티아카데미, 대법원 무죄 판결로 전문성 재조명 문신 합법화 논의가 진행되는 가운데, 그레이시티아카데미가 대법원에서 무죄 판결을 받아 전문성이 재조명되고 있습니다. 2026.06.09" [ref=e168] [cursor=pointer]:
+                - /url: /news/2026-05-28-cf0645ad
+                - img [ref=e170]
+                - generic [ref=e173]:
+                  - paragraph [ref=e174]: 문신 합법화 논의 속 그레이시티아카데미, 대법원 무죄 판결로 전문성 재조명
+                  - paragraph [ref=e175]: 문신 합법화 논의가 진행되는 가운데, 그레이시티아카데미가 대법원에서 무죄 판결을 받아 전문성이 재조명되고 있습니다.
+                - generic [ref=e176]: 2026.06.09
+            - listitem [ref=e177]:
+              - link "내년 문신사법 시행…대구보건대, 문신·반영구 분야 전문 인재 양성 나서 대구보건대학교가 내년 시행되는 문신사법에 맞춰 문신 및 반영구 분야의 전문 인재 양성에 나선다고 합니다. 2026.06.09" [ref=e178] [cursor=pointer]:
+                - /url: /news/2026-06-07-d7bef52e
+                - img [ref=e180]
+                - generic [ref=e183]:
+                  - paragraph [ref=e184]: 내년 문신사법 시행…대구보건대, 문신·반영구 분야 전문 인재 양성 나서
+                  - paragraph [ref=e185]: 대구보건대학교가 내년 시행되는 문신사법에 맞춰 문신 및 반영구 분야의 전문 인재 양성에 나선다고 합니다.
+                - generic [ref=e186]: 2026.06.09
+            - listitem [ref=e187]:
+              - link "[이사람] 33년 만에 벗은 ‘불법’ 낙인…한국타투협회 성명 발표 “이제 K-타투 세계 표준으로” 한국타투협회가 33년 만에 불법 낙인을 벗었다고 성명을 발표했습니다. 협회는 이제 K-타투가 세계 표준으로 자리 잡을 것이라고 밝혔습니다. 2026.06.09" [ref=e188] [cursor=pointer]:
+                - /url: /news/2026-06-08-6abe5956
+                - img [ref=e190]
+                - generic [ref=e193]:
+                  - paragraph [ref=e194]: "[이사람] 33년 만에 벗은 ‘불법’ 낙인…한국타투협회 성명 발표 “이제 K-타투 세계 표준으로”"
+                  - paragraph [ref=e195]: 한국타투협회가 33년 만에 불법 낙인을 벗었다고 성명을 발표했습니다. 협회는 이제 K-타투가 세계 표준으로 자리 잡을 것이라고 밝혔습니다.
+                - generic [ref=e196]: 2026.06.09
+        - generic [ref=e197]:
+          - heading "주요 일정" [level=2] [ref=e198]
+          - list [ref=e200]:
+            - listitem [ref=e201]:
+              - generic [ref=e203]:
+                - generic [ref=e204]: "2025.10"
+                - generic [ref=e205]: 문신사법 공포
+            - listitem [ref=e206]:
+              - generic [ref=e208]:
+                - generic [ref=e209]: "2026"
+                - generic [ref=e210]: 시험 준비 기간 · 출제기준 마련
+            - listitem [ref=e211]:
+              - generic [ref=e213]:
+                - generic [ref=e214]: "2027.10"
+                - generic [ref=e215]: 법 시행 · 면허제도 개시
+            - listitem [ref=e216]:
+              - generic [ref=e218]:
+                - generic [ref=e219]: 2027 말
+                - generic [ref=e220]: 첫 국가시험 시행 예정
+        - generic [ref=e221]:
+          - paragraph [ref=e222]: 문신패스 · 문신사 국가시험 학습 서비스
+          - generic [ref=e223]:
+            - link "이용약관" [ref=e224] [cursor=pointer]:
+              - /url: /legal/terms
+            - generic [ref=e225]: ·
+            - link "개인정보처리방침" [ref=e226] [cursor=pointer]:
+              - /url: /legal/privacy
+          - paragraph [ref=e227]: © 2026 MuShinPass
+  - alert [ref=e228]

@@ -12,7 +12,6 @@ import {
   IconHelp,
   IconHome,
   IconLock,
-  IconMessage,
   IconNewspaper,
   IconSparkles,
   IconTimer,
@@ -78,7 +77,6 @@ const PERSONAL_FEATURES = [
 // 공용: 로그인 없이 누구나
 const PUBLIC_MENU = [
   { href: "/textbook", Icon: IconFileText, label: "교과서" },
-  { href: "/community", Icon: IconMessage, label: "커뮤니티" },
   { href: "/notice", Icon: IconBell, label: "공지사항" },
   { href: "/news", Icon: IconNewspaper, label: "뉴스" },
   { href: "/faq", Icon: IconHelp, label: "자주 묻는 질문" },

@@ -8,7 +8,6 @@ import {
   IconGraduationCap,
   IconHome,
   IconLogout,
-  IconMessage,
   IconSparkles,
   IconTimer,
 } from '@/components/icons'
@@ -46,7 +45,6 @@ export default async function AppShellLayout({
     { href: '/study', label: '학습', icon: <IconBook size={20} /> },
     { href: '/mock-exam', label: '모의고사', icon: <IconTimer size={20} /> },
     { href: '/study/wrong-answers', label: '오답노트', icon: <IconSparkles size={20} /> },
-    { href: '/community', label: '커뮤니티', icon: <IconMessage size={20} /> },
   ]
 
   return (

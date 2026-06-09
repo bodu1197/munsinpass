@@ -1,8 +1,9 @@
 import type { MetadataRoute } from 'next'
 import { SITE_URL } from '@/lib/site'
 import { CURRICULUM } from '@/data/curriculum'
+import { getPublishedSlugs } from '@/lib/news/store'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()
   // 공개(로그인 불필요) 페이지만 등록. 개인 학습(퀴즈·대시보드)은 로그인 게이트라 제외.
   const routes: {
@@ -27,10 +28,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     freq: 'monthly' as const,
   }))
 
-  return [...routes, ...partRoutes].map((r) => ({
+  const base = [...routes, ...partRoutes].map((r) => ({
     url: `${SITE_URL}${r.path}`,
     lastModified: now,
     changeFrequency: r.freq,
     priority: r.priority,
   }))
+
+  // 자동 게시된 뉴스 상세 URL(있을 때만)
+  const news = (await getPublishedSlugs(200)).map((n) => ({
+    url: `${SITE_URL}/news/${n.slug}`,
+    lastModified: n.publishedAt ? new Date(n.publishedAt) : now,
+    changeFrequency: 'never' as const,
+    priority: 0.6,
+  }))
+
+  return [...base, ...news]
 }

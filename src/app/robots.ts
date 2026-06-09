@@ -7,8 +7,8 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        // 개인 데이터·인증 페이지는 수집 제외
-        disallow: ['/dashboard', '/auth/'],
+        // 개인 데이터·인증·관리자 페이지는 수집 제외
+        disallow: ['/dashboard', '/auth/', '/admin'],
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,

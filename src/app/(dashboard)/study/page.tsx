@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { SUBJECTS, getSubjectCount } from '@/data/questions'
-import { IconBook, IconBookmark, IconChecklist, IconChevronRight, IconFileText, IconPencil, IconSearch, SUBJECT_ICON } from '@/components/icons'
+import { IconBook, IconBookmark, IconChart, IconChecklist, IconChevronRight, IconFileText, IconPencil, IconRefresh, IconSearch, SUBJECT_ICON } from '@/components/icons'
 
 export const metadata: Metadata = {
   title: '과목별 학습 | 문신패스',
@@ -11,26 +11,25 @@ export const metadata: Metadata = {
 export default function StudyPage() {
   return (
     <div className="py-6">
-      <div className="flex items-center justify-between mb-1">
-        <h1 className="text-xl font-bold">과목별 학습</h1>
-        <div className="flex items-center gap-3">
+      <h1 className="text-xl font-bold mb-1">과목별 학습</h1>
+      <p className="text-sm text-muted mb-4">과목을 선택해 문제를 풀어보세요.</p>
+      <div className="flex flex-wrap gap-2 mb-5">
+        {[
+          { href: '/study/search', label: '검색', Icon: IconSearch },
+          { href: '/study/review', label: '복습', Icon: IconRefresh },
+          { href: '/study/stats', label: '통계', Icon: IconChart },
+          { href: '/study/bookmarks', label: '북마크', Icon: IconBookmark },
+        ].map(({ href, label, Icon }) => (
           <Link
-            href="/study/search"
-            className="inline-flex items-center gap-1.5 text-sm text-primary font-medium hover:underline"
+            key={href}
+            href={href}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border text-sm font-medium text-muted hover:text-foreground hover:border-primary transition-colors"
           >
-            <IconSearch size={15} />
-            검색
+            <Icon size={15} />
+            {label}
           </Link>
-          <Link
-            href="/study/bookmarks"
-            className="inline-flex items-center gap-1.5 text-sm text-primary font-medium hover:underline"
-          >
-            <IconBookmark size={15} />
-            북마크
-          </Link>
-        </div>
+        ))}
       </div>
-      <p className="text-sm text-muted mb-5">과목을 선택해 문제를 풀어보세요.</p>
 
       {/* 전체 교과서 */}
       <Link

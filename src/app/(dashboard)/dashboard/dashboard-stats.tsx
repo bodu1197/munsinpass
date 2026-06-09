@@ -1,8 +1,11 @@
 'use client'
 
+import { useMemo } from 'react'
+import Link from 'next/link'
 import { SUBJECT_MAP } from '@/data/questions'
 import { useProgress } from '@/lib/progress'
-import { SUBJECT_ICON } from '@/components/icons'
+import { getReview } from '@/lib/srs'
+import { IconChevronRight, IconRefresh, SUBJECT_ICON } from '@/components/icons'
 
 const EXAM_DATE = new Date('2027-12-01T00:00:00')
 
@@ -16,6 +19,7 @@ function daysUntilExam() {
 export function DashboardStats() {
   const { stats, hydrated } = useProgress()
   const dday = hydrated ? daysUntilExam() : null
+  const review = useMemo(() => getReview(), [stats])
 
   return (
     <div className="space-y-4">
@@ -31,9 +35,38 @@ export function DashboardStats() {
         <StatCard label="누적 학습" value={hydrated ? stats.uniqueAttempted : null} unit="문" />
       </div>
 
+      {/* 오늘의 복습 */}
+      <Link
+        href="/study/review"
+        className="flex items-center gap-3 rounded-2xl border border-border bg-surface shadow-[var(--shadow-card)] p-4 hover:border-primary transition-colors"
+      >
+        <span className="grid place-items-center h-10 w-10 shrink-0 rounded-xl bg-primary-soft text-primary">
+          <IconRefresh size={20} />
+        </span>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-sm">오늘의 복습</p>
+          <p className="text-xs text-muted mt-0.5">
+            {!hydrated
+              ? '—'
+              : review.dueCount > 0
+                ? `${review.dueCount}문제가 복습 대기 중`
+                : '지금 복습할 문제가 없습니다'}
+          </p>
+        </div>
+        {hydrated && review.dueCount > 0 && (
+          <span className="tabular text-lg font-bold text-primary">{review.dueCount}</span>
+        )}
+        <IconChevronRight size={18} className="text-subtle" />
+      </Link>
+
       {/* 과목별 진행률 */}
       <div className="rounded-2xl border border-border bg-surface shadow-[var(--shadow-card)] p-4">
-        <p className="text-xs font-semibold text-muted mb-3">과목별 진행률</p>
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-xs font-semibold text-muted">과목별 진행률</p>
+          <Link href="/study/stats" className="text-xs text-primary font-medium hover:underline">
+            통계 자세히
+          </Link>
+        </div>
         <div className="space-y-3">
           {stats.bySubject.map((s) => {
             const meta = SUBJECT_MAP[s.subject]

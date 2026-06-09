@@ -11,10 +11,12 @@ import {
   analyzeResult,
   recordSession,
   getCompletedSessions,
+  registerGeneratedQuestions,
+  generatedCount,
   type GeneratedExam,
   type ExamAnalysis,
 } from '@/lib/adaptive'
-import { IconCheck, IconClock, IconTarget, IconTimer, IconX, IconChevronRight, IconRefresh } from '@/components/icons'
+import { IconCheck, IconClock, IconTarget, IconTimer, IconX, IconChevronRight, IconRefresh, IconSparkles } from '@/components/icons'
 
 const EXAM_SIZE = 15
 const SECONDS_PER_QUESTION = 60
@@ -56,6 +58,36 @@ export function MockExam() {
   const [idx, setIdx] = useState(0)
   const [remaining, setRemaining] = useState(0)
   const [analysis, setAnalysis] = useState<ExamAnalysis | null>(null)
+  const [aiBusy, setAiBusy] = useState(false)
+  const [aiMsg, setAiMsg] = useState<string | null>(null)
+
+  async function fetchAI(subjects: SubjectKey[], difficulty: number, avoid: string[]) {
+    setAiBusy(true)
+    setAiMsg(null)
+    try {
+      const res = await fetch('/api/generate-questions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subjects, difficulty, count: 8, avoid }),
+      })
+      const j = await res.json()
+      if (j.enabled === false) {
+        setAiMsg('AI 생성이 비활성 상태입니다(OpenAI 키 미설정). 정적 적응형으로 계속 학습할 수 있습니다.')
+        return
+      }
+      if (!j.questions?.length) {
+        setAiMsg('이번엔 추가된 문항이 없습니다' + (j.error ? ` (${String(j.error).slice(0, 60)})` : ''))
+        return
+      }
+      const added = registerGeneratedQuestions(j.questions)
+      setAiMsg(`AI 약점 문항 ${added}개가 은행에 추가됐습니다. 다음 회차부터 출제됩니다. (총 보유 ${generatedCount()}개)`)
+      refreshIntro()
+    } catch (e) {
+      setAiMsg('생성 오류: ' + String(e).slice(0, 60))
+    } finally {
+      setAiBusy(false)
+    }
+  }
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const examRef = useRef<GeneratedExam | null>(null)
@@ -345,6 +377,33 @@ export function MockExam() {
           >
             오답노트 보기
           </Link>
+        </div>
+
+        {/* AI 약점 문항 보충 (L2) */}
+        <div className="mt-3 rounded-2xl border border-dashed border-border-strong p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold flex items-center gap-1.5">
+                <IconSparkles size={15} className="text-primary" /> AI 약점 문항 보충
+              </p>
+              <p className="text-xs text-muted mt-0.5">약점 과목을 AI가 새 문항으로 생성해 다음 회차부터 추가합니다.</p>
+            </div>
+            <button
+              type="button"
+              disabled={aiBusy}
+              onClick={() =>
+                fetchAI(
+                  a.weakSubjects.length ? a.weakSubjects : (['hygiene', 'anatomy', 'ink_material', 'law'] as SubjectKey[]),
+                  exam.targetDifficulty,
+                  exam.questions.map((q) => q.question)
+                )
+              }
+              className="shrink-0 px-4 py-2.5 rounded-xl bg-surface-2 hover:bg-primary-soft text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50"
+            >
+              {aiBusy ? '생성 중…' : 'AI 보충'}
+            </button>
+          </div>
+          {aiMsg && <p className="mt-2 text-xs text-subtle">{aiMsg}</p>}
         </div>
 
         {/* 문항별 해설 */}

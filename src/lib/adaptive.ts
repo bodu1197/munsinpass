@@ -22,6 +22,76 @@ const B: Record<number, number> = { 1: -1, 2: 0, 3: 1 }
 const K = 0.18 // 능력 갱신 학습률
 const PASS_RATE = 0.6 // 합격선 60%
 
+// ── AI 생성 문항 런타임 풀 (L2 강화 루프) ──
+const NORMQ = (s: string) => (s || '').toLowerCase().replace(/\s+/g, '')
+const AIQ_KEY = 'munshinpass:aiq:v1'
+const RUNTIME: Question[] = []
+const RUNTIME_BY_ID = new Map<string, Question>()
+let runtimeLoaded = false
+
+function loadRuntime() {
+  if (runtimeLoaded || typeof window === 'undefined') return
+  runtimeLoaded = true
+  try {
+    const raw = window.localStorage.getItem(AIQ_KEY)
+    if (raw) {
+      const arr = JSON.parse(raw) as Question[]
+      if (Array.isArray(arr))
+        for (const q of arr)
+          if (q && q.id && !RUNTIME_BY_ID.has(q.id)) {
+            RUNTIME.push(q)
+            RUNTIME_BY_ID.set(q.id, q)
+          }
+    }
+  } catch {
+    /* 무시 */
+  }
+}
+
+/** AI 생성 문항을 런타임 은행에 추가(중복 제거). 추가된 개수 반환. */
+export function registerGeneratedQuestions(qs: Question[]): number {
+  loadRuntime()
+  const seen = new Set<string>(QUESTIONS.map((q) => NORMQ(q.question)))
+  RUNTIME.forEach((q) => seen.add(NORMQ(q.question)))
+  let added = 0
+  for (const q of qs) {
+    if (!q || !q.id || RUNTIME_BY_ID.has(q.id)) continue
+    const k = NORMQ(q.question)
+    if (seen.has(k)) continue
+    seen.add(k)
+    RUNTIME.push(q)
+    RUNTIME_BY_ID.set(q.id, q)
+    added++
+  }
+  if (added && typeof window !== 'undefined') {
+    try {
+      window.localStorage.setItem(AIQ_KEY, JSON.stringify(RUNTIME))
+    } catch {
+      /* 무시 */
+    }
+  }
+  return added
+}
+
+export function generatedCount(): number {
+  loadRuntime()
+  return RUNTIME.length
+}
+
+function questionPool(): Question[] {
+  loadRuntime()
+  return RUNTIME.length ? [...QUESTIONS, ...RUNTIME] : QUESTIONS
+}
+
+/** 난이도 모수 b — 인라인 difficulty 우선, 없으면 META 기본 */
+function bOf(q: Question): number {
+  return B[q.difficulty ?? getDifficulty(q.id)] ?? 0
+}
+function bById(id: string): number {
+  const q = RUNTIME_BY_ID.get(id)
+  return B[q?.difficulty ?? getDifficulty(id)] ?? 0
+}
+
 function sigmoid(x: number) {
   return 1 / (1 + Math.exp(-x))
 }
@@ -53,7 +123,7 @@ export function estimateAbility(answers: AnswerRecord[] = getAnswers()): Ability
   for (const a of sorted) {
     const subj = a.subject
     if (!SUBJECT_KEYS.includes(subj)) continue
-    const b = B[getDifficulty(a.questionId)] ?? 0
+    const b = bById(a.questionId)
     const expected = sigmoid(theta[subj] - b)
     theta[subj] += K * ((a.correct ? 1 : 0) - expected)
     counts[subj] += 1
@@ -175,7 +245,7 @@ function itemWeight(
   recent: Set<string>,
   seen: Set<string>
 ): number {
-  const b = B[getDifficulty(q.id)] ?? 0
+  const b = bOf(q)
   // 목표 난이도 근접 가우시안
   let w = Math.exp(-((b - target) ** 2) / (2 * 0.6 * 0.6)) + 0.05
   if (recent.has(q.id))
@@ -275,7 +345,7 @@ export function generateExam(size = 15): GeneratedExam {
   for (const s of SUBJECT_KEYS) {
     const need = counts[s]
     if (need <= 0) continue
-    const pool = QUESTIONS.filter((q) => q.subject === s)
+    const pool = questionPool().filter((q) => q.subject === s)
     picked.push(...weightedPick(pool, need, (q) => itemWeight(q, target, recent, seen)))
   }
 

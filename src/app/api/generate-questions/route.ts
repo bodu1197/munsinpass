@@ -5,11 +5,28 @@
 
 import { SUBJECT_MAP, type SubjectKey } from '@/data/questions'
 import { topicsForSubject } from '@/data/blueprint'
+import { createClient } from '@/utils/supabase/server'
+import { isSupabaseConfigured } from '@/utils/supabase/config'
+import { rateLimit, type RateLimitRule } from '@/lib/rate-limit'
 
 export const runtime = 'nodejs'
 export const maxDuration = 30
 
 const SUBJECT_KEYS: SubjectKey[] = ['hygiene', 'anatomy', 'ink_material', 'law']
+
+// 버스트 가드: 식별자(사용자 또는 IP)당 60초에 10회. OpenAI 호출 비용 폭주 방지.
+const RATE_LIMIT: RateLimitRule = { windowMs: 60_000, max: 10 }
+
+// 식별자용 클라이언트 IP. ⚠️ x-forwarded-for 는 위조 가능 → 데모 모드 베스트-에포트 전용.
+// (프로덕션은 user.id 로 키잉하므로 IP 위조가 레이트리밋에 영향을 주지 않는다.)
+function clientIp(req: Request): string {
+  const xff = req.headers.get('x-forwarded-for')
+  if (xff) {
+    const first = xff.split(',')[0].trim()
+    if (first) return first
+  }
+  return req.headers.get('x-real-ip')?.trim() || 'unknown'
+}
 
 function apiKey(): string | null {
   const k = (process.env.OPENAI_API_KEY || '').trim()
@@ -89,10 +106,49 @@ function uid() {
 }
 
 export async function POST(req: Request) {
+  // 1) 인증 — 무인증 직접 호출 차단. Supabase 구성 시 로그인 사용자만 허용.
+  //    프로덕션에서는 Supabase 미구성(환경변수 누락 등)이어도 인증을 강제한다(fail-closed):
+  //    비싼 OpenAI 엔드포인트가 오구성으로 무방비 노출되는 것을 방지.
+  //    데모/개발(비프로덕션 + Supabase 미구성)에서만 인증을 건너뛰고 IP 기준 레이트리밋.
+  const requireAuth = isSupabaseConfigured() || process.env.NODE_ENV === 'production'
+  let identity: string
+  if (requireAuth) {
+    let userId: string | null = null
+    try {
+      const supabase = await createClient()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      userId = user?.id ?? null
+    } catch {
+      userId = null // 인증 백엔드 장애/오구성 → 미인증으로 간주(fail-closed)
+    }
+    if (!userId) {
+      return Response.json(
+        { enabled: true, questions: [], error: '로그인이 필요합니다.' },
+        { status: 401 },
+      )
+    }
+    identity = `u:${userId}`
+  } else {
+    identity = `ip:${clientIp(req)}`
+  }
+
+  // 2) 키 확인 — 미설정 시 비용 없이 즉시 비활성 응답(graceful degradation).
   const key = apiKey()
   if (!key) {
     return Response.json({ enabled: false, questions: [], reason: 'OPENAI_API_KEY 미설정' })
   }
+
+  // 3) 레이트리밋 — 실제 OpenAI 호출 직전에만 카운트(버스트 방지).
+  const rl = rateLimit(identity, RATE_LIMIT)
+  if (!rl.ok) {
+    return Response.json(
+      { enabled: true, questions: [], error: '요청이 너무 잦습니다. 잠시 후 다시 시도해 주세요.' },
+      { status: 429, headers: { 'Retry-After': String(Math.ceil(rl.retryAfterMs / 1000)) } },
+    )
+  }
+
   let body: { subjects?: string[]; difficulty?: number; count?: number; avoid?: string[] } = {}
   try {
     body = await req.json()

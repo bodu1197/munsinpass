@@ -106,6 +106,33 @@ export interface Database {
         Update: { processed?: boolean }
         Relationships: []
       }
+      notices: {
+        Row: {
+          id: number
+          title: string
+          body: string
+          pinned: boolean
+          published: boolean
+          published_at: string
+          created_at: string
+        }
+        Insert: {
+          title: string
+          body: string
+          pinned?: boolean
+          published?: boolean
+          published_at?: string
+          created_at?: string
+        }
+        Update: {
+          title?: string
+          body?: string
+          pinned?: boolean
+          published?: boolean
+          published_at?: string
+        }
+        Relationships: []
+      }
       user_answers: {
         Row: {
           id: number

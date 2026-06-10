@@ -11,6 +11,7 @@ import {
 import { useBookmarks } from '@/lib/bookmarks'
 import { useHydrated } from '@/lib/progress'
 import { IconArrowRight, IconRefresh, SUBJECT_ICON } from '@/components/icons'
+import { chipClass } from '@/components/ui'
 
 type Source = 'all' | SubjectKey | 'bookmarks'
 
@@ -35,6 +36,8 @@ export function Flashcards() {
   const [flipped, setFlipped] = useState(false)
 
   useEffect(() => {
+    // 마운트 후 클라이언트에서만 셔플(SSR/클라 불일치 방지) — 의도된 패턴
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOrder(shuffle(ALL_IDS))
   }, [])
 
@@ -109,6 +112,7 @@ export function Flashcards() {
           <button
             type="button"
             onClick={() => setFlipped((f) => !f)}
+            aria-label={flipped ? '문제 보기' : '정답·해설 보기'}
             className="w-full text-left rounded-2xl border border-border bg-surface shadow-[var(--shadow-card)] p-6 min-h-[220px] flex flex-col justify-center cursor-pointer hover:border-primary transition-colors"
           >
             {(() => {
@@ -170,13 +174,7 @@ export function Flashcards() {
 
 function Chip({ on, onClick, children }: { on: boolean; onClick: () => void; children: ReactNode }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors cursor-pointer ${
-        on ? 'border-primary bg-primary-soft text-primary' : 'border-border text-muted hover:text-foreground'
-      }`}
-    >
+    <button type="button" onClick={onClick} className={chipClass(on)}>
       {children}
     </button>
   )

@@ -2,15 +2,7 @@
 
 import { useMemo, useState, type ReactNode } from 'react'
 import { GLOSSARY, GLOSSARY_CATEGORIES, type GlossaryCategory } from '@/data/glossary'
-
-const inputClass =
-  'w-full px-4 py-3 rounded-xl border border-border bg-surface text-foreground text-[0.95rem] placeholder:text-subtle focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
-
-function chip(on: boolean) {
-  return `px-3 py-1.5 rounded-full text-sm font-medium border transition-colors cursor-pointer ${
-    on ? 'border-primary bg-primary-soft text-primary' : 'border-border text-muted hover:text-foreground'
-  }`
-}
+import { inputClass, chipClass } from '@/components/ui'
 
 export function Glossary() {
   const [q, setQ] = useState('')
@@ -77,7 +69,7 @@ export function Glossary() {
 
 function Pill({ on, onClick, children }: { on: boolean; onClick: () => void; children: ReactNode }) {
   return (
-    <button type="button" onClick={onClick} className={chip(on)}>
+    <button type="button" onClick={onClick} className={chipClass(on)}>
       {children}
     </button>
   )

@@ -3,7 +3,9 @@
 // SUPABASE_SERVICE_ROLE_KEY 는 NEXT_PUBLIC_ 접두사가 없어 클라이언트 번들에 포함되지 않는다.
 // (클라이언트 컴포넌트에서 import 금지)
 
+import 'server-only' // 클라이언트 번들에 import 되면 빌드 에러로 막는 fail-safe
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from './types'
 
 const URL = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? '').trim()
 const SERVICE_KEY = (process.env.SUPABASE_SERVICE_ROLE_KEY ?? '').trim()
@@ -16,11 +18,11 @@ export function isAdminConfigured(): boolean {
 }
 
 /** RLS 우회 클라이언트. 미설정 시 throw — 호출 전 isAdminConfigured() 로 가드할 것. */
-export function createAdminClient(): SupabaseClient {
+export function createAdminClient(): SupabaseClient<Database> {
   if (!isAdminConfigured()) {
     throw new Error('SUPABASE_SERVICE_ROLE_KEY 미설정 — service-role 작업 불가')
   }
-  return createClient(URL, SERVICE_KEY, {
+  return createClient<Database>(URL, SERVICE_KEY, {
     auth: { persistSession: false, autoRefreshToken: false },
   })
 }

@@ -62,6 +62,7 @@ export async function summarizeNews(input: {
         ],
         response_format: { type: 'json_schema', json_schema: { name: 'news_summary', strict: true, schema: SCHEMA } },
       }),
+      signal: AbortSignal.timeout(20000), // Vercel 60s 함수 타임아웃 보호
     })
     if (!res.ok) return null
     const j = await res.json()

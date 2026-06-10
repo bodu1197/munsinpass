@@ -2,6 +2,7 @@ import Link from "next/link";
 import { QUESTIONS } from "@/data/questions";
 import { NEWS } from "@/data/news";
 import { getPublishedNews } from "@/lib/news/store";
+import { daysUntilExam } from "@/lib/exam";
 import {
   IconArrowRight,
   IconBell,
@@ -16,16 +17,6 @@ import {
   IconSparkles,
   IconTimer,
 } from "@/components/icons";
-
-function daysUntilExam() {
-  const examDate = new Date(2027, 11, 1);
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  return Math.max(
-    0,
-    Math.ceil((examDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
-  );
-}
 
 function fmtDate(iso: string | null): string {
   if (!iso) return "";

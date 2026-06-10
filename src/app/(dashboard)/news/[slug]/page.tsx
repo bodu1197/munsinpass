@@ -29,6 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       type: 'article',
       url: `${SITE_URL}/news/${item.slug}`,
+      images: [`${SITE_URL}/opengraph-image.png`],
     },
   }
 }
@@ -48,6 +49,7 @@ export default async function NewsDetailPage({ params }: Props) {
     author: { '@type': 'Organization', name: item.sourceName },
     publisher: { '@type': 'Organization', name: SITE_NAME },
     mainEntityOfPage: `${SITE_URL}/news/${item.slug}`,
+    image: [`${SITE_URL}/opengraph-image.png`],
   }
 
   return (

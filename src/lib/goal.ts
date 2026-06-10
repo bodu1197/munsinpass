@@ -5,9 +5,9 @@ import { useSyncExternalStore } from 'react'
 
 const KEY = 'munshinpass:goal:v1'
 const EVENT = 'munshinpass:goal-change'
-const DEFAULT = 20
-const MIN = 5
-const MAX = 200
+const DEFAULT = 20 // 일일 기본 목표(문항)
+const MIN = 5 // 지속 가능한 최소
+const MAX = 200 // 번아웃 방지 상한
 
 function isBrowser() {
   return typeof window !== 'undefined'

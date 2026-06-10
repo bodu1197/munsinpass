@@ -5,16 +5,8 @@ import Link from 'next/link'
 import { SUBJECT_MAP } from '@/data/questions'
 import { useProgress } from '@/lib/progress'
 import { getReview } from '@/lib/srs'
+import { daysUntilExam } from '@/lib/exam'
 import { IconChevronRight, IconRefresh, SUBJECT_ICON } from '@/components/icons'
-
-const EXAM_DATE = new Date('2027-12-01T00:00:00')
-
-function daysUntilExam() {
-  const now = new Date()
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  const diffMs = EXAM_DATE.getTime() - today.getTime()
-  return Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)))
-}
 
 export function DashboardStats() {
   const { stats, hydrated } = useProgress()

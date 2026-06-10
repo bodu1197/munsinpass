@@ -12,18 +12,10 @@ import {
 } from '@/data/questions'
 import { BookmarkButton } from '@/components/bookmark-button'
 import { SUBJECT_ICON } from '@/components/icons'
-
-const inputClass =
-  'w-full px-4 py-3 rounded-xl border border-border bg-surface text-foreground text-[0.95rem] placeholder:text-subtle focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
+import { inputClass, chipClass } from '@/components/ui'
 
 const DIFF_LABEL: Record<number, string> = { 1: '하', 2: '중', 3: '상' }
 const MAX_RESULTS = 100
-
-function chip(on: boolean) {
-  return `px-3 py-1.5 rounded-full text-sm font-medium border transition-colors cursor-pointer ${
-    on ? 'border-primary bg-primary-soft text-primary' : 'border-border text-muted hover:text-foreground'
-  }`
-}
 
 // 교과서 PART id → 관련 과목(SUBJECT_TO_PARTS 역매핑)
 function subjectsForPart(part: string): SubjectKey[] {
@@ -83,14 +75,14 @@ export function Search() {
 
       <div className="flex flex-wrap gap-2 mt-3">
         {SUBJECTS.map((s) => (
-          <button key={s.key} type="button" onClick={() => toggleSubject(s.key)} className={chip(subjects.includes(s.key))}>
+          <button key={s.key} type="button" onClick={() => toggleSubject(s.key)} className={chipClass(subjects.includes(s.key))}>
             {s.label}
           </button>
         ))}
       </div>
       <div className="flex flex-wrap gap-2 mt-2">
         {[1, 2, 3].map((d) => (
-          <button key={d} type="button" onClick={() => toggleDiff(d)} className={chip(diffs.includes(d))}>
+          <button key={d} type="button" onClick={() => toggleDiff(d)} className={chipClass(diffs.includes(d))}>
             난이도 {DIFF_LABEL[d]}
           </button>
         ))}

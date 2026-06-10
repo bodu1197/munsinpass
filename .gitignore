@@ -46,3 +46,8 @@ next-env.d.ts
 
 # Playwright MCP 산출물(스냅샷·콘솔 로그)
 .playwright-mcp/
+
+# review8 게이트 로컬 마커(상태별 해시)
+.claude/.review8-hash
+# 개인 설정(공유 안 함)
+.claude/settings.local.json

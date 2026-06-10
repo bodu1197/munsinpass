@@ -108,6 +108,8 @@ export function MockExam() {
   }, [])
 
   useEffect(() => {
+    // 마운트 시 클라이언트 전용(localStorage) 데이터로 초기화 — 의도된 패턴
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHydrated(true)
     refreshIntro()
   }, [refreshIntro])

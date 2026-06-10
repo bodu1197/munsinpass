@@ -1,0 +1,15 @@
+#!/bin/sh
+# 푸시 전 정적 게이트 — 타입체크 · 린트 · 빌드 통과해야 푸시 허용.
+# 활성화: git config core.hooksPath .githooks
+set -e
+
+echo "▶ pre-push: typecheck…"
+npm run typecheck
+
+echo "▶ pre-push: lint…"
+npm run lint
+
+echo "▶ pre-push: build…"
+npm run build
+
+echo "✓ pre-push 게이트 통과 — 푸시 진행"

@@ -5,15 +5,9 @@ import Link from 'next/link'
 import { useProgress, getAnswers } from '@/lib/progress'
 import { useGoal, setGoal } from '@/lib/goal'
 import { IconArrowRight } from '@/components/icons'
+import { daysUntilExam } from '@/lib/exam'
 
-const EXAM = new Date(2027, 11, 1)
 const WD = ['일', '월', '화', '수', '목', '금', '토']
-
-function dday() {
-  const n = new Date()
-  const t = new Date(n.getFullYear(), n.getMonth(), n.getDate())
-  return Math.max(0, Math.ceil((EXAM.getTime() - t.getTime()) / 86_400_000))
-}
 
 export function Planner() {
   const { stats, hydrated } = useProgress()
@@ -45,7 +39,7 @@ export function Planner() {
       <div className="rounded-2xl bg-primary text-on-primary p-5 flex items-center justify-between">
         <div>
           <p className="text-xs opacity-80">첫 국가시험까지</p>
-          <p className="tabular text-3xl font-bold mt-1">D-{dday()}</p>
+          <p className="tabular text-3xl font-bold mt-1">D-{daysUntilExam()}</p>
         </div>
         <p className="text-xs opacity-75">2027년 12월 기준</p>
       </div>
@@ -58,7 +52,7 @@ export function Planner() {
               type="button"
               onClick={() => setGoal(goal - 5)}
               aria-label="목표 줄이기"
-              className="h-8 w-8 grid place-items-center rounded-lg border border-border text-muted hover:text-foreground transition-colors cursor-pointer"
+              className="h-10 w-10 grid place-items-center rounded-lg border border-border text-muted hover:text-foreground transition-colors cursor-pointer"
             >
               −
             </button>
@@ -67,7 +61,7 @@ export function Planner() {
               type="button"
               onClick={() => setGoal(goal + 5)}
               aria-label="목표 늘리기"
-              className="h-8 w-8 grid place-items-center rounded-lg border border-border text-muted hover:text-foreground transition-colors cursor-pointer"
+              className="h-10 w-10 grid place-items-center rounded-lg border border-border text-muted hover:text-foreground transition-colors cursor-pointer"
             >
               +
             </button>
@@ -84,7 +78,11 @@ export function Planner() {
 
       <div className="rounded-2xl border border-border bg-surface p-5">
         <p className="font-semibold text-sm mb-4">최근 7일 학습량</p>
-        <div className="flex items-end justify-between gap-2">
+        <div
+          className="flex items-end justify-between gap-2"
+          role="img"
+          aria-label={`최근 7일 학습량: ${week.map((d) => `${d.label} ${d.count}문제`).join(', ')}`}
+        >
           {week.map((d, i) => (
             <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
               <div className="w-full flex items-end justify-center h-20">

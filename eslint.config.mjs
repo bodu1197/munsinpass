@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // 임시 산출물·테스트 스냅샷(소스 아님)
+    ".tmp/**",
+    ".playwright-mcp/**",
   ]),
 ]);
 

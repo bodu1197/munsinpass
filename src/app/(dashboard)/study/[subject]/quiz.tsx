@@ -43,6 +43,8 @@ export function Quiz({
   const [finished, setFinished] = useState(false)
 
   useEffect(() => {
+    // 마운트 후 클라이언트에서만 셔플(SSR/클라 불일치 #418 방지) — 의도된 패턴
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOrdered((prev) => shuffle(prev))
   }, [])
 

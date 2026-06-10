@@ -1,8 +1,11 @@
-// 게시된 뉴스 읽기(서버 컴포넌트/사이트맵/RSS 용). 공개 RLS(status='published')로 anon 읽기.
-// Supabase 미설정 시 빈 배열 → 호출부가 정적 시드로 폴백.
+// 게시된 뉴스 읽기(서버 컴포넌트/사이트맵/RSS 용).
+// 쿠키 없는 공개 anon 읽기(published RLS) + unstable_cache(tag 'news') → 방문마다 Supabase 조회하지 않음.
+// 새 글 게시/승인 시 cron·actions 에서 revalidateTag('news') 로 갱신.
 
-import { createClient } from '@/utils/supabase/server'
-import { isSupabaseConfigured } from '@/utils/supabase/config'
+import { unstable_cache } from 'next/cache'
+import { createClient } from '@supabase/supabase-js'
+import { SUPABASE_URL, SUPABASE_ANON_KEY, isSupabaseConfigured } from '@/utils/supabase/config'
+import type { Database } from '@/utils/supabase/types'
 
 export interface PublishedNews {
   slug: string
@@ -27,6 +30,14 @@ interface NewsRow {
 }
 
 const COLUMNS = 'slug,title,summary,source_name,source_url,tier,category,published_at'
+const CACHE_OPTS = { tags: ['news'], revalidate: 600 }
+
+// 쿠키 미사용 → unstable_cache 안에서 호출 가능. published 만 RLS 로 노출.
+function publicClient() {
+  return createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  })
+}
 
 function mapRow(r: NewsRow): PublishedNews {
   return {
@@ -41,11 +52,10 @@ function mapRow(r: NewsRow): PublishedNews {
   }
 }
 
-export async function getPublishedNews(limit = 50): Promise<PublishedNews[]> {
+async function fetchPublished(limit: number): Promise<PublishedNews[]> {
   if (!isSupabaseConfigured()) return []
   try {
-    const supabase = await createClient()
-    const { data, error } = await supabase
+    const { data, error } = await publicClient()
       .from('news_items')
       .select(COLUMNS)
       .eq('status', 'published')
@@ -58,11 +68,12 @@ export async function getPublishedNews(limit = 50): Promise<PublishedNews[]> {
   }
 }
 
-export async function getNewsBySlug(slug: string): Promise<PublishedNews | null> {
+export const getPublishedNews = unstable_cache(fetchPublished, ['published-news'], CACHE_OPTS)
+
+async function fetchBySlug(slug: string): Promise<PublishedNews | null> {
   if (!isSupabaseConfigured()) return null
   try {
-    const supabase = await createClient()
-    const { data, error } = await supabase
+    const { data, error } = await publicClient()
       .from('news_items')
       .select(COLUMNS)
       .eq('status', 'published')
@@ -75,11 +86,12 @@ export async function getNewsBySlug(slug: string): Promise<PublishedNews | null>
   }
 }
 
-export async function getPublishedSlugs(limit = 200): Promise<{ slug: string; publishedAt: string | null }[]> {
+export const getNewsBySlug = unstable_cache(fetchBySlug, ['news-by-slug'], CACHE_OPTS)
+
+async function fetchSlugs(limit: number): Promise<{ slug: string; publishedAt: string | null }[]> {
   if (!isSupabaseConfigured()) return []
   try {
-    const supabase = await createClient()
-    const { data, error } = await supabase
+    const { data, error } = await publicClient()
       .from('news_items')
       .select('slug,published_at')
       .eq('status', 'published')
@@ -94,3 +106,5 @@ export async function getPublishedSlugs(limit = 200): Promise<{ slug: string; pu
     return []
   }
 }
+
+export const getPublishedSlugs = unstable_cache(fetchSlugs, ['news-slugs'], CACHE_OPTS)

@@ -2,6 +2,7 @@
 // 흐름: 인증 → 후보 수집(collect) → 기존 url_hash 제외 → AI 요약 → tier 분기(공식 자동게시/언론 초안) → 저장.
 // Vercel Cron 은 CRON_SECRET 설정 시 Authorization: Bearer <secret> 헤더를 자동 주입한다.
 
+import { revalidateTag } from 'next/cache'
 import { collectCandidates, type Candidate } from '@/lib/news/collect'
 import { summarizeNews } from '@/lib/news/summarize'
 import { createAdminClient, isAdminConfigured } from '@/utils/supabase/admin'
@@ -30,7 +31,7 @@ interface NewsInsert {
 
 function authorized(req: Request): boolean {
   const secret = (process.env.CRON_SECRET || '').trim()
-  if (!secret) return true // 미설정 시 개발 편의로 허용 — 운영에서는 반드시 설정
+  if (!secret) return false // fail-closed: 시크릿 미설정이면 차단(.env.local·Vercel 모두 CRON_SECRET 설정 필요)
   return req.headers.get('authorization') === `Bearer ${secret}`
 }
 
@@ -106,7 +107,7 @@ async function handle(req: Request): Promise<Response> {
     })
   }
 
-  const built = await mapWithConcurrency(fresh, 4, buildRow)
+  const built = await mapWithConcurrency(fresh, 2, buildRow)
   const rows = built.filter((r): r is NewsInsert => r !== null)
   if (rows.length === 0) {
     return Response.json({
@@ -124,6 +125,8 @@ async function handle(req: Request): Promise<Response> {
   if (error) {
     return Response.json({ ok: false, reason: error.message }, { status: 500 })
   }
+
+  revalidateTag('news', 'max') // 게시 뉴스 캐시 무효화(stale-while-revalidate)
 
   return Response.json({
     ok: true,

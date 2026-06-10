@@ -3,7 +3,7 @@
 // 뉴스 검토 액션 — 관리자만. service-role 로 status 갱신(RLS 우회).
 // 권한: 로그인 사용자의 이메일이 ADMIN_EMAILS 에 포함되어야 함(이중 방어: proxy 의 /admin 게이트 + 여기).
 
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { createClient } from '@/utils/supabase/server'
 import { isSupabaseConfigured } from '@/utils/supabase/config'
 import { createAdminClient, isAdminConfigured, isAdminEmail } from '@/utils/supabase/admin'
@@ -26,6 +26,7 @@ export async function approveNews(formData: FormData): Promise<void> {
     .update({ status: 'published', published_at: new Date().toISOString() })
     .eq('slug', slug)
     .eq('status', 'draft')
+  revalidateTag('news', 'max')
   revalidatePath('/admin/news')
   revalidatePath('/news')
 }

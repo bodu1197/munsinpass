@@ -3,9 +3,8 @@
 import { useActionState } from 'react'
 import { updateNickname, updatePassword, deleteAccount } from '@/app/actions/account'
 import type { AuthState } from '@/app/actions/auth'
+import { inputClass } from '@/components/ui'
 
-const inputClass =
-  'w-full px-4 py-3 rounded-xl border border-border bg-surface text-foreground text-[0.95rem] placeholder:text-subtle focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
 const labelClass = 'block text-sm font-medium text-foreground mb-1.5'
 
 function Alert({ state }: { state: AuthState }) {

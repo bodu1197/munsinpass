@@ -6,7 +6,8 @@
 import { getAnswers, type AnswerRecord } from '@/lib/progress'
 
 const DAY = 86_400_000
-// streak 0,1,2,3,4,5+ 일 때의 복습 간격(일)
+// 연속 정답 streak(0,1,2,3,4,5+)별 복습 간격(일). SM-2 영감의 점증 간격 —
+// 맞힐수록 길게, 틀리면 streak=0 리셋되어 1일 후 재복습. 30일이 상한.
 const INTERVALS = [1, 2, 4, 8, 16, 30]
 
 interface QState {

@@ -71,6 +71,14 @@ export function MockExam() {
         body: JSON.stringify({ subjects, difficulty, count: 8, avoid }),
       })
       const j = await res.json()
+      if (res.status === 401) {
+        setAiMsg('로그인이 필요합니다. 다시 로그인한 뒤 시도해 주세요.')
+        return
+      }
+      if (res.status === 429) {
+        setAiMsg(j.error || '요청이 너무 잦습니다. 잠시 후 다시 시도해 주세요.')
+        return
+      }
       if (j.enabled === false) {
         setAiMsg('AI 생성이 비활성 상태입니다(OpenAI 키 미설정). 정적 적응형으로 계속 학습할 수 있습니다.')
         return
@@ -405,7 +413,10 @@ export function MockExam() {
               {aiBusy ? '생성 중…' : 'AI 보충'}
             </button>
           </div>
-          {aiMsg && <p className="mt-2 text-xs text-subtle">{aiMsg}</p>}
+          {/* 라이브 영역은 항상 마운트(빈 상태는 sr-only) → 401/429/성공 메시지가 스크린리더에 안정적으로 공지됨 */}
+          <p role="status" aria-live="polite" className={aiMsg ? 'mt-2 text-xs text-subtle' : 'sr-only'}>
+            {aiMsg}
+          </p>
         </div>
 
         {/* 문항별 해설 */}

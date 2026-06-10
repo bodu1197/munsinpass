@@ -12,6 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     freq: MetadataRoute.Sitemap[number]['changeFrequency']
   }[] = [
     { path: '', priority: 1, freq: 'weekly' },
+    { path: '/pricing', priority: 0.9, freq: 'monthly' },
     { path: '/textbook', priority: 0.9, freq: 'weekly' },
     { path: '/faq', priority: 0.9, freq: 'monthly' },
     { path: '/news', priority: 0.8, freq: 'daily' },

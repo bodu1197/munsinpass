@@ -36,6 +36,76 @@ export interface Database {
         Update: { action?: string }
         Relationships: []
       }
+      entitlements: {
+        Row: {
+          user_id: string
+          status: 'none' | 'active' | 'self_closed'
+          access_until: string | null
+          source: 'paid' | 'manual' | 'grandfather'
+          passed_reported_at: string | null
+          granted_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          status?: 'none' | 'active' | 'self_closed'
+          access_until?: string | null
+          source?: 'paid' | 'manual' | 'grandfather'
+          passed_reported_at?: string | null
+          granted_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          status?: 'none' | 'active' | 'self_closed'
+          access_until?: string | null
+          source?: 'paid' | 'manual' | 'grandfather'
+          passed_reported_at?: string | null
+          granted_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          id: number
+          user_id: string
+          payment_id: string
+          amount: number
+          status: 'pending' | 'paid' | 'failed' | 'cancelled' | 'refunded'
+          method: string | null
+          provider: string
+          receipt_url: string | null
+          raw: Record<string, unknown> | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          payment_id: string
+          amount: number
+          status: 'pending' | 'paid' | 'failed' | 'cancelled' | 'refunded'
+          method?: string | null
+          provider?: string
+          receipt_url?: string | null
+          raw?: Record<string, unknown> | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          status?: 'pending' | 'paid' | 'failed' | 'cancelled' | 'refunded'
+          method?: string | null
+          receipt_url?: string | null
+          raw?: Record<string, unknown> | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payment_webhooks: {
+        Row: { event_id: string; payload: Record<string, unknown>; processed: boolean; created_at: string }
+        Insert: { event_id: string; payload: Record<string, unknown>; processed?: boolean; created_at?: string }
+        Update: { processed?: boolean }
+        Relationships: []
+      }
       user_answers: {
         Row: {
           id: number

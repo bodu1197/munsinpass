@@ -9,6 +9,8 @@ import { IconArrowRight, IconRefresh } from '@/components/icons'
 
 export function Review() {
   const { stats, hydrated } = useProgress()
+  // stats 변경(문제 풀이)마다 복습 큐를 재계산하기 위한 의도적 의존성
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const info = useMemo(() => getReview(), [stats])
   const [reviewIds, setReviewIds] = useState<string[] | null>(null)
 

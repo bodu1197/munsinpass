@@ -3,7 +3,7 @@ export const inputClass =
   'w-full px-4 py-3 rounded-xl border border-border bg-surface text-foreground text-[0.95rem] placeholder:text-subtle focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'
 
 export function chipClass(active: boolean): string {
-  return `px-3 py-1.5 rounded-full text-sm font-medium border transition-colors cursor-pointer ${
+  return `inline-flex items-center h-11 px-3 rounded-full text-sm font-medium border transition-colors cursor-pointer ${
     active ? 'border-primary bg-primary-soft text-primary' : 'border-border text-muted hover:text-foreground'
   }`
 }

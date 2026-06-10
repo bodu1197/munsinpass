@@ -11,6 +11,8 @@ import { IconChevronRight, IconRefresh, SUBJECT_ICON } from '@/components/icons'
 export function DashboardStats() {
   const { stats, hydrated } = useProgress()
   const dday = hydrated ? daysUntilExam() : null
+  // stats 변경(문제 풀이)마다 복습 큐를 재계산하기 위한 의도적 의존성
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const review = useMemo(() => getReview(), [stats])
 
   return (

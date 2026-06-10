@@ -41,6 +41,14 @@ export function Search() {
   const [subjects, setSubjects] = useState<SubjectKey[]>(initialSubjects)
   const [diffs, setDiffs] = useState<number[]>([])
 
+  // URL 쿼리(subject·part) 변경 시 필터를 새 컨텍스트로 재동기화.
+  // React 19 공식 "prop 변경 시 state 조정" 패턴(렌더 중 setState + 이전값 추적) — useEffect/setState-in-effect 아님.
+  const [syncedFrom, setSyncedFrom] = useState(initialSubjects)
+  if (syncedFrom !== initialSubjects) {
+    setSyncedFrom(initialSubjects)
+    setSubjects(initialSubjects)
+  }
+
   const results = useMemo(() => {
     const kw = keyword.trim().toLowerCase()
     return QUESTIONS.filter((q) => {

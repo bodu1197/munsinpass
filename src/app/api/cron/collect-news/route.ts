@@ -70,7 +70,8 @@ async function buildRow(c: Candidate): Promise<NewsInsert | null> {
     relevance,
     url_hash: c.urlHash,
     status,
-    published_at: status === 'published' ? (c.publishedAt ?? new Date().toISOString()) : null,
+    // RSS 원문 발행일을 초안에도 저장 → 승인 시 원문일 보존(공개는 status 로 게이트되어 무해)
+    published_at: c.publishedAt ?? (status === 'published' ? new Date().toISOString() : null),
   }
 }
 

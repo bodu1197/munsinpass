@@ -21,6 +21,7 @@ const SUBJECT_KEYS: SubjectKey[] = SUBJECTS.map((s) => s.key)
 const B: Record<number, number> = { 1: -1, 2: 0, 3: 1 }
 const K = 0.18 // 능력 갱신 학습률
 const PASS_RATE = 0.6 // 합격선 60%
+const DIFFICULTY_SIGMA = 0.6 // 목표 난이도 근접 가우시안 가중치의 폭(표준편차)
 
 // ── AI 생성 문항 런타임 풀 (L2 강화 루프) ──
 const NORMQ = (s: string) => (s || '').toLowerCase().replace(/\s+/g, '')
@@ -247,7 +248,7 @@ function itemWeight(
 ): number {
   const b = bOf(q)
   // 목표 난이도 근접 가우시안
-  let w = Math.exp(-((b - target) ** 2) / (2 * 0.6 * 0.6)) + 0.05
+  let w = Math.exp(-((b - target) ** 2) / (2 * DIFFICULTY_SIGMA * DIFFICULTY_SIGMA)) + 0.05
   if (recent.has(q.id))
     w *= 0.03 // 직전 회차 문항 강한 패널티
   else if (seen.has(q.id)) w *= 0.45 // 과거에 본 문항 약한 패널티

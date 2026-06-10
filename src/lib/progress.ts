@@ -23,6 +23,12 @@ interface ProgressData {
   answers: AnswerRecord[]
 }
 
+const VALID_SUBJECTS = new Set<string>(SUBJECTS.map((s) => s.key))
+/** localStorage·서버에서 들어온 미지의 subject 값을 걸러내는 가드(외부 데이터 손상 방어) */
+export function isValidSubject(s: unknown): s is SubjectKey {
+  return typeof s === 'string' && VALID_SUBJECTS.has(s)
+}
+
 function isBrowser() {
   return typeof window !== 'undefined'
 }
@@ -34,7 +40,8 @@ function read(): ProgressData {
     if (!raw) return { answers: [] }
     const parsed = JSON.parse(raw) as ProgressData
     if (!parsed || !Array.isArray(parsed.answers)) return { answers: [] }
-    return parsed
+    // 손상/구버전 데이터 방어: subject가 유효한 답안만 통과
+    return { answers: parsed.answers.filter((a) => a && isValidSubject(a.subject)) }
   } catch {
     return { answers: [] }
   }

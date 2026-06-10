@@ -7,6 +7,9 @@ import 'server-only' // 클라이언트 번들에 import 되면 빌드 에러로
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from './types'
 
+// 권한 판별(isAdminEmail/isAdminRole)은 순수 모듈 src/lib/roles.ts 로 이전,
+// 서버 측 합성 판정(이메일 부트스트랩 OR DB 역할)은 src/lib/admin-access.ts 의 isUserAdmin 사용.
+
 const URL = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? '').trim()
 const SERVICE_KEY = (process.env.SUPABASE_SERVICE_ROLE_KEY ?? '').trim()
 
@@ -25,14 +28,4 @@ export function createAdminClient(): SupabaseClient<Database> {
   return createClient<Database>(URL, SERVICE_KEY, {
     auth: { persistSession: false, autoRefreshToken: false },
   })
-}
-
-/** 쉼표로 구분된 ADMIN_EMAILS 중 하나인지(뉴스 검토 권한) */
-export function isAdminEmail(email: string | null | undefined): boolean {
-  if (!email) return false
-  const list = (process.env.ADMIN_EMAILS ?? '')
-    .split(',')
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean)
-  return list.includes(email.trim().toLowerCase())
 }

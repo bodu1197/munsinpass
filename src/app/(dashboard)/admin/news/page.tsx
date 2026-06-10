@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import { isSupabaseConfigured } from '@/utils/supabase/config'
-import { createAdminClient, isAdminConfigured, isAdminEmail } from '@/utils/supabase/admin'
+import { createAdminClient, isAdminConfigured } from '@/utils/supabase/admin'
+import { isUserAdmin } from '@/lib/admin-access'
 import { DraftActions } from '@/components/draft-actions'
 
 export const metadata: Metadata = {
@@ -41,7 +42,7 @@ export default async function AdminNewsPage() {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login?next=/admin/news')
-  if (!isAdminEmail(user.email)) {
+  if (!(await isUserAdmin(supabase, user))) {
     return <Notice>접근 권한이 없습니다. (관리자 전용)</Notice>
   }
   if (!isAdminConfigured()) {

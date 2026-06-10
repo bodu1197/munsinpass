@@ -1,6 +1,6 @@
 // 게시된 뉴스 읽기(서버 컴포넌트/사이트맵/RSS 용).
 // 쿠키 없는 공개 anon 읽기(published RLS) + unstable_cache(tag 'news') → 방문마다 Supabase 조회하지 않음.
-// 새 글 게시/승인 시 cron·actions 에서 revalidateTag('news') 로 갱신.
+// 새 글 게시/승인 시 cron·actions 에서 revalidateTag('news', 'max') 로 갱신.
 
 import { unstable_cache } from 'next/cache'
 import { createClient } from '@supabase/supabase-js'

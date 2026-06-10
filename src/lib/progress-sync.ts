@@ -6,7 +6,7 @@
 
 import { createClient } from '@/utils/supabase/client'
 import { isSupabaseConfigured } from '@/utils/supabase/config'
-import { getAnswers, mergeAnswers, answerKey, type AnswerRecord } from './progress'
+import { getAnswers, mergeAnswers, answerKey, isValidSubject, type AnswerRecord } from './progress'
 
 interface ServerRow {
   question_id: string
@@ -34,7 +34,8 @@ export async function syncProgress(): Promise<{ pulled: number; pushed: number }
       .eq('user_id', user.id)
     if (error) return null
 
-    const rows = (data ?? []) as ServerRow[]
+    // 서버 데이터 방어: subject가 유효한 행만 사용(미지의 값은 estimateAbility에서 조용히 누락 → 데이터 손실)
+    const rows = ((data ?? []) as ServerRow[]).filter((r) => isValidSubject(r.subject))
     const serverRecs: AnswerRecord[] = rows.map((r) => ({
       questionId: r.question_id,
       subject: r.subject as AnswerRecord['subject'],

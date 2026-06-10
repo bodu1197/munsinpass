@@ -99,7 +99,7 @@ export default async function TheoryPage({ params }: { params: Params }) {
             <li key={c.heading}>
               <a
                 href={`#${chapterId(i)}`}
-                className="flex items-center gap-2 py-1 text-[0.95rem] text-muted hover:text-primary transition-colors"
+                className="flex items-center gap-2 py-2.5 text-[0.95rem] text-muted hover:text-primary transition-colors"
               >
                 <span className="tabular text-xs text-subtle w-5 shrink-0">{i + 1}.</span>
                 {c.heading}

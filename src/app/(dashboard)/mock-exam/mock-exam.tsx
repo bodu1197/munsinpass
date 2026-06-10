@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { SUBJECT_MAP, type Question, type SubjectKey } from '@/data/questions'
+import { SUBJECT_MAP, type SubjectKey } from '@/data/questions'
 import { getPart } from '@/data/curriculum'
 import { getAnswers, recordAnswer, type AnswerRecord } from '@/lib/progress'
 import {

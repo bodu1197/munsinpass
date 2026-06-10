@@ -16,7 +16,7 @@ export function WelcomeCard() {
         type="button"
         onClick={() => setOnboarded()}
         aria-label="환영 안내 닫기"
-        className="absolute top-3 right-3 text-on-primary/70 hover:text-on-primary transition-colors cursor-pointer"
+        className="absolute top-1.5 right-1.5 grid h-11 w-11 place-items-center rounded-lg text-on-primary/70 hover:text-on-primary hover:bg-on-primary/10 transition-colors cursor-pointer"
       >
         <IconX size={16} />
       </button>

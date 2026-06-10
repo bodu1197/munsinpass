@@ -7,6 +7,7 @@ import { SUBJECT_MAP, type SubjectKey } from '@/data/questions'
 import { topicsForSubject } from '@/data/blueprint'
 
 export const runtime = 'nodejs'
+export const maxDuration = 30
 
 const SUBJECT_KEYS: SubjectKey[] = ['hygiene', 'anatomy', 'ink_material', 'law']
 
@@ -110,6 +111,7 @@ export async function POST(req: Request) {
   try {
     const res = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
+      signal: AbortSignal.timeout(20_000), // Vercel maxDuration(30s) 보호: OpenAI 응답 지연 시 행(hang) 방지
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model,

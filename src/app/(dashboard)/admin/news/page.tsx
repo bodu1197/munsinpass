@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import { isSupabaseConfigured } from '@/utils/supabase/config'
 import { createAdminClient, isAdminConfigured, isAdminEmail } from '@/utils/supabase/admin'
-import { approveNews, rejectNews } from '@/app/actions/news'
+import { DraftActions } from '@/components/draft-actions'
 
 export const metadata: Metadata = {
   title: '뉴스 검토 | 문신패스',
@@ -90,26 +90,7 @@ export default async function AdminNewsPage() {
               >
                 원문 보기 →
               </a>
-              <div className="flex items-center gap-2 mt-4">
-                <form action={approveNews}>
-                  <input type="hidden" name="slug" value={d.slug} />
-                  <button
-                    type="submit"
-                    className="rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-on-primary hover:bg-primary-hover transition-colors cursor-pointer"
-                  >
-                    승인·게시
-                  </button>
-                </form>
-                <form action={rejectNews}>
-                  <input type="hidden" name="slug" value={d.slug} />
-                  <button
-                    type="submit"
-                    className="rounded-full border border-border px-4 py-1.5 text-sm font-medium text-muted hover:text-foreground transition-colors cursor-pointer"
-                  >
-                    반려
-                  </button>
-                </form>
-              </div>
+              <DraftActions slug={d.slug} />
             </li>
           ))}
         </ul>

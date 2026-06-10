@@ -109,9 +109,17 @@ export function Flashcards() {
             </button>
           </div>
 
-          <button
-            type="button"
+          {/* 카드 전체 클릭으로 뒤집기. button 안에 ol/p(블록) 중첩은 무효 HTML → div role=button + 키보드 처리 */}
+          <div
+            role="button"
+            tabIndex={0}
             onClick={() => setFlipped((f) => !f)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                setFlipped((f) => !f)
+              }
+            }}
             aria-label={flipped ? '문제 보기' : '정답·해설 보기'}
             className="w-full text-left rounded-2xl border border-border bg-surface shadow-[var(--shadow-card)] p-6 min-h-[220px] flex flex-col justify-center cursor-pointer hover:border-primary transition-colors"
           >
@@ -128,6 +136,16 @@ export function Flashcards() {
             {!flipped ? (
               <>
                 <p className="prose-read font-medium text-[1.05rem]">{cur.question}</p>
+                {cur.choices.length > 0 && (
+                  <ol className="mt-4 space-y-2">
+                    {cur.choices.map((c, i) => (
+                      <li key={i} className="flex gap-2 text-[0.95rem]">
+                        <span className="tabular text-subtle shrink-0">{i + 1}.</span>
+                        <span>{c}</span>
+                      </li>
+                    ))}
+                  </ol>
+                )}
                 <p className="text-xs text-subtle mt-4">카드를 눌러 정답·해설 보기</p>
               </>
             ) : (
@@ -138,7 +156,7 @@ export function Flashcards() {
                 <p className="prose-read mt-3 text-[0.95rem] text-muted">{cur.explanation}</p>
               </>
             )}
-          </button>
+          </div>
 
           <div className="mt-4 flex items-center gap-2.5">
             <button

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { rateLimit, __resetRateLimit, type RateLimitRule } from './rate-limit'
+import { rateLimit, __resetRateLimit, __rateLimitSize, type RateLimitRule } from './rate-limit'
 
 const RULE: RateLimitRule = { windowMs: 1000, max: 3 }
 
@@ -36,5 +36,13 @@ describe('rateLimit (인메모리 슬라이딩 윈도우)', () => {
     const r = rateLimit('c', RULE, 500)
     expect(r.ok).toBe(false)
     expect(r.retryAfterMs).toBe(500) // windowMs(1000) - (500 - 0)
+  })
+
+  it('store가 5000을 넘으면 prune이 만료 키만 정리(활성 키 보존)', () => {
+    for (let i = 0; i < 5001; i++) rateLimit(`k${i}`, RULE, 0) // 5001개, 모두 t=0
+    expect(__rateLimitSize()).toBe(5001) // now=0 이라 아직 만료 전 → prune이 지우지 않음
+    // 윈도우(1000ms) 경과 시점에 새 키 추가 → prune 트리거, t=0 키 전부 만료 삭제
+    rateLimit('fresh', RULE, 2000)
+    expect(__rateLimitSize()).toBe(1) // 만료된 5001개 삭제, 'fresh'만 잔존
   })
 })

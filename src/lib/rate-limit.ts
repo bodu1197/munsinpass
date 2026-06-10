@@ -41,7 +41,8 @@ export function rateLimit(
   recent.push(now)
   store.set(key, recent)
 
-  // 메모리 누수 방지: 맵이 비대해지면 만료된 키 정리(현재 윈도우 기준 coarse GC)
+  // 메모리 누수 방지: 맵이 비대해지면 만료된 키 정리(현재 윈도우 기준 coarse GC).
+  // 5000 = 보수적 상한(키당 number[] 수개 → 수백 KB 수준). 활성 키는 보존하므로 정확도 영향 없음.
   if (store.size > 5000) prune(now, rule.windowMs)
 
   return { ok: true, retryAfterMs: 0 }
@@ -56,4 +57,9 @@ function prune(now: number, windowMs: number): void {
 /** 테스트 전용: 내부 상태 초기화 */
 export function __resetRateLimit(): void {
   store.clear()
+}
+
+/** 테스트 전용: 내부 맵 크기(prune 검증용) */
+export function __rateLimitSize(): number {
+  return store.size
 }

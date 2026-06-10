@@ -401,6 +401,7 @@ export function MockExam() {
             <button
               type="button"
               disabled={aiBusy}
+              aria-busy={aiBusy}
               onClick={() =>
                 fetchAI(
                   a.weakSubjects.length ? a.weakSubjects : (['hygiene', 'anatomy', 'ink_material', 'law'] as SubjectKey[]),

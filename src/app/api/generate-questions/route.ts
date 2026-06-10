@@ -110,7 +110,10 @@ export async function POST(req: Request) {
   //    프로덕션에서는 Supabase 미구성(환경변수 누락 등)이어도 인증을 강제한다(fail-closed):
   //    비싼 OpenAI 엔드포인트가 오구성으로 무방비 노출되는 것을 방지.
   //    데모/개발(비프로덕션 + Supabase 미구성)에서만 인증을 건너뛰고 IP 기준 레이트리밋.
-  const requireAuth = isSupabaseConfigured() || process.env.NODE_ENV === 'production'
+  // 인증 생략은 "데모"에서만: 비프로덕션 AND Supabase 미구성. 그 외(프로덕션이거나
+  // Supabase 구성됨)는 모두 인증 강제. ⚠️ 이 식을 단순화하지 말 것 — 프로덕션 fail-closed가 깨짐.
+  const isDemoMode = process.env.NODE_ENV !== 'production' && !isSupabaseConfigured()
+  const requireAuth = !isDemoMode
   let identity: string
   if (requireAuth) {
     let userId: string | null = null
@@ -124,8 +127,9 @@ export async function POST(req: Request) {
       userId = null // 인증 백엔드 장애/오구성 → 미인증으로 간주(fail-closed)
     }
     if (!userId) {
+      // enabled 필드 생략: 미인증 응답이 OpenAI 키 구성 여부를 드러내지 않도록(클라는 status로 분기).
       return Response.json(
-        { enabled: true, questions: [], error: '로그인이 필요합니다.' },
+        { questions: [], error: '로그인이 필요합니다.' },
         { status: 401 },
       )
     }
@@ -144,7 +148,7 @@ export async function POST(req: Request) {
   const rl = rateLimit(identity, RATE_LIMIT)
   if (!rl.ok) {
     return Response.json(
-      { enabled: true, questions: [], error: '요청이 너무 잦습니다. 잠시 후 다시 시도해 주세요.' },
+      { questions: [], error: '요청이 너무 잦습니다. 잠시 후 다시 시도해 주세요.' },
       { status: 429, headers: { 'Retry-After': String(Math.ceil(rl.retryAfterMs / 1000)) } },
     )
   }

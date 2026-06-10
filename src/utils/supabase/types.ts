@@ -8,9 +8,32 @@ export interface Database {
   public: {
     Tables: {
       profiles: {
-        Row: { id: string; email: string | null; nickname: string | null; created_at: string }
-        Insert: { id: string; email?: string | null; nickname?: string | null; created_at?: string }
-        Update: { email?: string | null; nickname?: string | null }
+        Row: { id: string; email: string | null; nickname: string | null; role: string; created_at: string }
+        Insert: { id: string; email?: string | null; nickname?: string | null; role?: string; created_at?: string }
+        Update: { email?: string | null; nickname?: string | null; role?: string }
+        Relationships: []
+      }
+      audit_logs: {
+        Row: {
+          id: number
+          actor_id: string | null
+          actor_email: string | null
+          action: string
+          target_type: string | null
+          target_id: string | null
+          changes: Record<string, unknown> | null
+          created_at: string
+        }
+        Insert: {
+          actor_id?: string | null
+          actor_email?: string | null
+          action: string
+          target_type?: string | null
+          target_id?: string | null
+          changes?: Record<string, unknown> | null
+          created_at?: string
+        }
+        Update: { action?: string }
         Relationships: []
       }
       user_answers: {

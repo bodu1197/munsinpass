@@ -7,7 +7,9 @@
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { createClient } from '@/utils/supabase/server'
 import { isSupabaseConfigured } from '@/utils/supabase/config'
-import { createAdminClient, isAdminConfigured, isAdminEmail } from '@/utils/supabase/admin'
+import { createAdminClient, isAdminConfigured } from '@/utils/supabase/admin'
+import { isUserAdmin } from '@/lib/admin-access'
+import { logAudit } from '@/lib/audit'
 
 export interface NewsActionResult {
   ok: boolean
@@ -20,7 +22,7 @@ async function assertAdmin(): Promise<boolean> {
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  return isAdminEmail(user?.email)
+  return isUserAdmin(supabase, user)
 }
 
 export async function reviewNews(
@@ -54,6 +56,12 @@ export async function reviewNews(
       .eq('status', 'draft')
     if (error) return { ok: false, error: `게시 실패: ${error.message}` }
 
+    await logAudit({
+      action: 'news.approved',
+      targetType: 'news_items',
+      targetId: slug,
+      changes: { status: { old: 'draft', new: 'published' } },
+    })
     revalidateTag('news', 'max')
     revalidatePath('/admin/news')
     revalidatePath('/news')
@@ -68,6 +76,12 @@ export async function reviewNews(
     .eq('status', 'draft')
   if (error) return { ok: false, error: `반려 실패: ${error.message}` }
 
+  await logAudit({
+    action: 'news.rejected',
+    targetType: 'news_items',
+    targetId: slug,
+    changes: { status: { old: 'draft', new: 'rejected' } },
+  })
   revalidatePath('/admin/news')
   return { ok: true }
 }

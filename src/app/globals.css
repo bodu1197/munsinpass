@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* 다크 모드: OS 선호도가 아니라 html.dark 클래스로 제어(수동 토글 + 무플래시 스크립트).
+   Tailwind dark: 변형도 .dark 기준으로 통일. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* =====================================================================
    문신패스 디자인 시스템 — "집중 모드 (Calm Focus)"
    장시간 학습용: 가독성 + 눈 피로 저감에 초점
@@ -40,34 +44,34 @@
   --shadow-md: 0 2px 6px rgba(31, 36, 46, 0.05), 0 8px 24px rgba(31, 36, 46, 0.07);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
+/* 다크 테마 토큰 — html.dark 일 때 적용. 무플래시 스크립트(layout.tsx)가
+   저장값(localStorage.theme) 또는 OS 선호도에 따라 .dark 를 페인트 전에 설정한다. */
+.dark {
+  color-scheme: dark;
 
-    --background: #14161c;   /* 순흑 대신 딥 슬레이트 */
-    --surface: #1c1f27;
-    --surface-2: #20242d;
-    --foreground: #e6e8ec;   /* 순백 대신(헐레이션 저감) */
-    --muted: #9aa2b1;
-    --subtle: #6b7382;
-    --border: #282c36;
-    --border-strong: #353b48;
+  --background: #14161c;   /* 순흑 대신 딥 슬레이트 */
+  --surface: #1c1f27;
+  --surface-2: #20242d;
+  --foreground: #e6e8ec;   /* 순백 대신(헐레이션 저감) */
+  --muted: #9aa2b1;
+  --subtle: #6b7382;
+  --border: #282c36;
+  --border-strong: #353b48;
 
-    --primary: #818cf8;
-    --primary-hover: #a5b4fc;
-    --primary-soft: #232648;
-    --on-primary: #14161c;
+  --primary: #818cf8;
+  --primary-hover: #a5b4fc;
+  --primary-soft: #232648;
+  --on-primary: #14161c;
 
-    --success: #34d399;
-    --success-soft: #11271e;
-    --danger: #fb7185;
-    --danger-soft: #321a22;
-    --warning: #fbbf24;
-    --warning-soft: #2e2410;
+  --success: #34d399;
+  --success-soft: #11271e;
+  --danger: #fb7185;
+  --danger-soft: #321a22;
+  --warning: #fbbf24;
+  --warning-soft: #2e2410;
 
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
-  }
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
 }
 
 @theme inline {

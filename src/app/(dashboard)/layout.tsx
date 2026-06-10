@@ -13,6 +13,7 @@ import {
 } from '@/components/icons'
 import { BottomNav, type NavItem } from './app-nav'
 import { ProgressSync } from '@/components/progress-sync'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 export default async function AppShellLayout({
   children,
@@ -67,7 +68,8 @@ export default async function AppShellLayout({
             문신패스
           </Link>
 
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <ThemeToggle />
             {user ? (
               <>
                 <span className="text-sm text-muted hidden lg:block">{nickname}님</span>

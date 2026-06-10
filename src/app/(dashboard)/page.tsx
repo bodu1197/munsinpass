@@ -228,8 +228,11 @@ export default async function Home() {
                 <div className="flex-1 min-w-0">
                   <p className="font-medium truncate">{n.title}</p>
                   <p className="text-sm text-muted truncate mt-0.5">{n.summary}</p>
+                  {/* 모바일: 날짜를 제목 아래로 → 제목이 가로폭을 충분히 사용 */}
+                  <span className="tabular text-xs text-subtle mt-1 block sm:hidden">{n.date}</span>
                 </div>
-                <span className="tabular text-xs text-subtle shrink-0 mt-0.5">{n.date}</span>
+                {/* 데스크톱: 날짜를 오른쪽에 */}
+                <span className="tabular text-xs text-subtle shrink-0 mt-0.5 hidden sm:block">{n.date}</span>
               </Link>
             </li>
           ))}

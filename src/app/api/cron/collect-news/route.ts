@@ -5,7 +5,7 @@
 import { revalidateTag } from 'next/cache'
 import { collectCandidates, type Candidate } from '@/lib/news/collect'
 import { summarizeNews } from '@/lib/news/summarize'
-import { deleteExpiredDrafts, DRAFT_EXPIRY_DAYS } from '@/lib/news/cleanup'
+import { deleteExpiredDrafts, DRAFT_EXPIRY_DAYS, type CleanupResult } from '@/lib/news/cleanup'
 import { createAdminClient, isAdminConfigured } from '@/utils/supabase/admin'
 
 export const runtime = 'nodejs'
@@ -30,15 +30,13 @@ interface NewsInsert {
   published_at: string | null
 }
 
-function respond(
-  base: Record<string, unknown>,
-  cleanup: { deleted: number; error: string | null },
-  status = 200,
-): Response {
-  return Response.json(
-    { ...base, deleted: cleanup.deleted, deletedError: cleanup.error ?? undefined },
-    { status },
-  )
+type ResponseBase =
+  | { ok: true; collected: number; inserted: number; published: number; drafted: number }
+  | { ok: false; reason: string }
+
+// deleted 건수만 응답에 포함 — cleanup.error 원문(Postgres 에러 메시지)은 서버 로그에만 남기고 응답 바디로 노출하지 않는다.
+function respond(base: ResponseBase, cleanup: CleanupResult, status = 200): Response {
+  return Response.json({ ...base, deleted: cleanup.deleted }, { status })
 }
 
 function authorized(req: Request): boolean {
@@ -121,14 +119,7 @@ async function handle(req: Request): Promise<Response> {
   const known = new Set(((existing as { url_hash: string }[] | null) ?? []).map((r) => r.url_hash))
 
   const fresh = candidates.filter((c) => !known.has(c.urlHash)).slice(0, MAX_NEW_PER_RUN)
-  if (fresh.length === 0) {
-    return respond(
-      { ok: true, collected: candidates.length, inserted: 0, published: 0, drafted: 0 },
-      cleanup,
-    )
-  }
-
-  const built = await mapWithConcurrency(fresh, 2, buildRow)
+  const built = await mapWithConcurrency(fresh, 2, buildRow) // fresh=[] 면 즉시 []
   const rows = built.filter((r): r is NewsInsert => r !== null)
   if (rows.length === 0) {
     return respond(

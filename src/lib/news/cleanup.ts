@@ -6,7 +6,7 @@ import type { Database } from '@/utils/supabase/types'
 import { logAudit } from '@/lib/audit'
 import { expiryCutoffISO } from './expiry'
 
-export { DRAFT_EXPIRY_DAYS, daysUntilExpiry } from './expiry'
+export { DRAFT_EXPIRY_DAYS } from './expiry'
 
 export interface CleanupResult {
   deleted: number

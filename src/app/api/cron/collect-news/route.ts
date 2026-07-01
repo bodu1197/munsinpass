@@ -30,6 +30,17 @@ interface NewsInsert {
   published_at: string | null
 }
 
+function respond(
+  base: Record<string, unknown>,
+  cleanup: { deleted: number; error: string | null },
+  status = 200,
+): Response {
+  return Response.json(
+    { ...base, deleted: cleanup.deleted, deletedError: cleanup.error ?? undefined },
+    { status },
+  )
+}
+
 function authorized(req: Request): boolean {
   const secret = (process.env.CRON_SECRET || '').trim()
   if (!secret) return false // fail-closed: 시크릿 미설정이면 차단(.env.local·Vercel 모두 CRON_SECRET 설정 필요)
@@ -96,15 +107,7 @@ async function handle(req: Request): Promise<Response> {
   }
 
   if (candidates.length === 0) {
-    return Response.json({
-      ok: true,
-      collected: 0,
-      inserted: 0,
-      published: 0,
-      drafted: 0,
-      deleted: cleanup.deleted,
-      deletedError: cleanup.error ?? undefined,
-    })
+    return respond({ ok: true, collected: 0, inserted: 0, published: 0, drafted: 0 }, cleanup)
   }
 
   // 이미 저장된 항목 제외
@@ -119,49 +122,40 @@ async function handle(req: Request): Promise<Response> {
 
   const fresh = candidates.filter((c) => !known.has(c.urlHash)).slice(0, MAX_NEW_PER_RUN)
   if (fresh.length === 0) {
-    return Response.json({
-      ok: true,
-      collected: candidates.length,
-      inserted: 0,
-      published: 0,
-      drafted: 0,
-      deleted: cleanup.deleted,
-      deletedError: cleanup.error ?? undefined,
-    })
+    return respond(
+      { ok: true, collected: candidates.length, inserted: 0, published: 0, drafted: 0 },
+      cleanup,
+    )
   }
 
   const built = await mapWithConcurrency(fresh, 2, buildRow)
   const rows = built.filter((r): r is NewsInsert => r !== null)
   if (rows.length === 0) {
-    return Response.json({
-      ok: true,
-      collected: candidates.length,
-      inserted: 0,
-      published: 0,
-      drafted: 0,
-      deleted: cleanup.deleted,
-      deletedError: cleanup.error ?? undefined,
-    })
+    return respond(
+      { ok: true, collected: candidates.length, inserted: 0, published: 0, drafted: 0 },
+      cleanup,
+    )
   }
 
   const { error } = await admin
     .from('news_items')
     .upsert(rows, { onConflict: 'url_hash', ignoreDuplicates: true })
   if (error) {
-    return Response.json({ ok: false, reason: error.message, deleted: cleanup.deleted }, { status: 500 })
+    return respond({ ok: false, reason: error.message }, cleanup, 500)
   }
 
   revalidateTag('news', 'max') // 게시 뉴스 캐시 무효화(stale-while-revalidate)
 
-  return Response.json({
-    ok: true,
-    collected: candidates.length,
-    inserted: rows.length,
-    published: rows.filter((r) => r.status === 'published').length,
-    drafted: rows.filter((r) => r.status === 'draft').length,
-    deleted: cleanup.deleted,
-    deletedError: cleanup.error ?? undefined,
-  })
+  return respond(
+    {
+      ok: true,
+      collected: candidates.length,
+      inserted: rows.length,
+      published: rows.filter((r) => r.status === 'published').length,
+      drafted: rows.filter((r) => r.status === 'draft').length,
+    },
+    cleanup,
+  )
 }
 
 export async function GET(req: Request): Promise<Response> {

@@ -42,7 +42,11 @@ async function updateDraftStatus(
     .select('slug')
     .maybeSingle()
   if (error) return { ok: false, error: `${failureLabel}: ${error.message}` }
-  if (!updated) return { ok: false, error: '이미 처리되었거나 만료되어 삭제된 뉴스입니다.' }
+  if (!updated) {
+    // 이미 처리됐거나 만료 cron 이 먼저 삭제한 phantom row → 재조회 없이는 목록에서 안 사라져 재시도가 막다른 길이 됨
+    revalidatePath('/admin/news')
+    return { ok: false, error: '이미 처리되었거나 만료되어 삭제된 뉴스입니다.' }
+  }
   return { ok: true }
 }
 

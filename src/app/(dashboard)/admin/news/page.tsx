@@ -5,7 +5,7 @@ import { isSupabaseConfigured } from '@/utils/supabase/config'
 import { createAdminClient, isAdminConfigured } from '@/utils/supabase/admin'
 import { isUserAdmin } from '@/lib/admin-access'
 import { DraftActions } from '@/components/draft-actions'
-import { DRAFT_EXPIRY_DAYS, daysUntilExpiry } from '@/lib/news/cleanup'
+import { DRAFT_EXPIRY_DAYS, daysUntilExpiry } from '@/lib/news/expiry'
 
 export const metadata: Metadata = {
   title: '뉴스 검토 | 문신패스',
@@ -74,7 +74,7 @@ export default async function AdminNewsPage() {
             const left = daysUntilExpiry(d.created_at, DRAFT_EXPIRY_DAYS)
             return (
             <li key={d.slug} className="rounded-2xl border border-border bg-surface p-5">
-              <div className="flex items-center gap-2 mb-1.5">
+              <div className="flex flex-wrap items-center gap-2 mb-1.5">
                 <span className="rounded-full border border-border px-2 py-0.5 text-[0.7rem] font-semibold text-muted">
                   언론
                 </span>
@@ -85,7 +85,7 @@ export default async function AdminNewsPage() {
                 )}
                 {left <= 1 && (
                   <span className="rounded-full bg-red-100 px-2 py-0.5 text-[0.7rem] font-semibold text-red-700">
-                    {left <= 0 ? '오늘 삭제 예정' : '삭제 D-1'}
+                    {left < 0 ? `삭제 기한 ${-left}일 경과` : left === 0 ? '오늘 삭제 예정' : '삭제 D-1'}
                   </span>
                 )}
               </div>

@@ -5,11 +5,13 @@
 // 단일 액션(intent=approve|reject) — useActionState 로 진행상태·에러를 한 곳에서 전달(조용한 실패/에러 혼동 방지).
 
 import { revalidatePath, revalidateTag } from 'next/cache'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/utils/supabase/server'
 import { isSupabaseConfigured } from '@/utils/supabase/config'
 import { createAdminClient, isAdminConfigured } from '@/utils/supabase/admin'
 import { isUserAdmin } from '@/lib/admin-access'
 import { logAudit } from '@/lib/audit'
+import type { Database, NewsStatus } from '@/utils/supabase/types'
 
 export interface NewsActionResult {
   ok: boolean
@@ -23,6 +25,25 @@ async function assertAdmin(): Promise<boolean> {
     data: { user },
   } = await supabase.auth.getUser()
   return isUserAdmin(supabase, user)
+}
+
+// draft → 다른 status 로 전이. 0건 매칭(이미 처리됐거나 만료 cron 이 먼저 삭제) 시 조용한 성공 처리 금지.
+async function updateDraftStatus(
+  admin: SupabaseClient<Database>,
+  slug: string,
+  patch: { status: NewsStatus; published_at?: string },
+  failureLabel: string,
+): Promise<NewsActionResult> {
+  const { data: updated, error } = await admin
+    .from('news_items')
+    .update(patch)
+    .eq('slug', slug)
+    .eq('status', 'draft')
+    .select('slug')
+    .maybeSingle()
+  if (error) return { ok: false, error: `${failureLabel}: ${error.message}` }
+  if (!updated) return { ok: false, error: '이미 처리되었거나 만료되어 삭제된 뉴스입니다.' }
+  return { ok: true }
 }
 
 export async function reviewNews(
@@ -49,12 +70,13 @@ export async function reviewNews(
     const publishedAt =
       (row as { published_at: string | null } | null)?.published_at ?? new Date().toISOString()
 
-    const { error } = await admin
-      .from('news_items')
-      .update({ status: 'published', published_at: publishedAt })
-      .eq('slug', slug)
-      .eq('status', 'draft')
-    if (error) return { ok: false, error: `게시 실패: ${error.message}` }
+    const result = await updateDraftStatus(
+      admin,
+      slug,
+      { status: 'published', published_at: publishedAt },
+      '게시 실패',
+    )
+    if (!result.ok) return result
 
     await logAudit({
       action: 'news.approved',
@@ -69,12 +91,8 @@ export async function reviewNews(
   }
 
   // reject
-  const { error } = await admin
-    .from('news_items')
-    .update({ status: 'rejected' })
-    .eq('slug', slug)
-    .eq('status', 'draft')
-  if (error) return { ok: false, error: `반려 실패: ${error.message}` }
+  const result = await updateDraftStatus(admin, slug, { status: 'rejected' }, '반려 실패')
+  if (!result.ok) return result
 
   await logAudit({
     action: 'news.rejected',

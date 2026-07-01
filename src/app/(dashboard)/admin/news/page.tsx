@@ -5,6 +5,7 @@ import { isSupabaseConfigured } from '@/utils/supabase/config'
 import { createAdminClient, isAdminConfigured } from '@/utils/supabase/admin'
 import { isUserAdmin } from '@/lib/admin-access'
 import { DraftActions } from '@/components/draft-actions'
+import { DRAFT_EXPIRY_DAYS, daysUntilExpiry } from '@/lib/news/cleanup'
 
 export const metadata: Metadata = {
   title: '뉴스 검토 | 문신패스',
@@ -54,7 +55,7 @@ export default async function AdminNewsPage() {
     .from('news_items')
     .select('slug,title,summary,source_name,source_url,tier,category,relevance,created_at')
     .eq('status', 'draft')
-    .order('created_at', { ascending: false })
+    .order('created_at', { ascending: true }) // 오래된(=삭제 임박) 항목이 먼저 보이도록
     .limit(100)
   const drafts = (data as DraftRow[] | null) ?? []
 
@@ -69,7 +70,9 @@ export default async function AdminNewsPage() {
         <Notice>검토 대기 중인 뉴스가 없습니다.</Notice>
       ) : (
         <ul className="space-y-3">
-          {drafts.map((d) => (
+          {drafts.map((d) => {
+            const left = daysUntilExpiry(d.created_at, DRAFT_EXPIRY_DAYS)
+            return (
             <li key={d.slug} className="rounded-2xl border border-border bg-surface p-5">
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="rounded-full border border-border px-2 py-0.5 text-[0.7rem] font-semibold text-muted">
@@ -79,6 +82,11 @@ export default async function AdminNewsPage() {
                 {d.category && <span className="text-xs text-subtle">· {d.category}</span>}
                 {d.relevance != null && (
                   <span className="text-xs text-subtle">· 관련도 {d.relevance}</span>
+                )}
+                {left <= 1 && (
+                  <span className="rounded-full bg-red-100 px-2 py-0.5 text-[0.7rem] font-semibold text-red-700">
+                    {left <= 0 ? '오늘 삭제 예정' : '삭제 D-1'}
+                  </span>
                 )}
               </div>
               <h2 className="font-semibold text-[1.05rem]">{d.title}</h2>
@@ -93,7 +101,8 @@ export default async function AdminNewsPage() {
               </a>
               <DraftActions slug={d.slug} />
             </li>
-          ))}
+            )
+          })}
         </ul>
       )}
     </div>

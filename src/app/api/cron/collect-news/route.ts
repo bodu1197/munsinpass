@@ -5,6 +5,7 @@
 import { revalidateTag } from 'next/cache'
 import { collectCandidates, type Candidate } from '@/lib/news/collect'
 import { summarizeNews } from '@/lib/news/summarize'
+import { deleteExpiredDrafts, DRAFT_EXPIRY_DAYS } from '@/lib/news/cleanup'
 import { createAdminClient, isAdminConfigured } from '@/utils/supabase/admin'
 
 export const runtime = 'nodejs'
@@ -83,18 +84,37 @@ async function handle(req: Request): Promise<Response> {
     return Response.json({ ok: false, reason: 'SUPABASE_SERVICE_ROLE_KEY 미설정' }, { status: 503 })
   }
 
-  const candidates = await collectCandidates()
-  if (candidates.length === 0) {
-    return Response.json({ ok: true, collected: 0, inserted: 0, published: 0, drafted: 0 })
-  }
-
   const admin = createAdminClient()
 
+  // 만료 정리(draft 3일 경과)와 수집은 서로 무관 → 병렬 실행(수집 실패해도 정리는 항상 시도)
+  const [cleanup, candidates] = await Promise.all([
+    deleteExpiredDrafts(admin, DRAFT_EXPIRY_DAYS),
+    collectCandidates(),
+  ])
+  if (cleanup.error) {
+    console.error('[collect-news] 만료 draft 삭제 실패:', cleanup.error)
+  }
+
+  if (candidates.length === 0) {
+    return Response.json({
+      ok: true,
+      collected: 0,
+      inserted: 0,
+      published: 0,
+      drafted: 0,
+      deleted: cleanup.deleted,
+      deletedError: cleanup.error ?? undefined,
+    })
+  }
+
   // 이미 저장된 항목 제외
-  const { data: existing } = await admin
+  const { data: existing, error: existingError } = await admin
     .from('news_items')
     .select('url_hash')
     .in('url_hash', candidates.map((c) => c.urlHash))
+  if (existingError) {
+    console.error('[collect-news] 기존 url_hash 조회 실패(중복 검사 생략됨):', existingError.message)
+  }
   const known = new Set(((existing as { url_hash: string }[] | null) ?? []).map((r) => r.url_hash))
 
   const fresh = candidates.filter((c) => !known.has(c.urlHash)).slice(0, MAX_NEW_PER_RUN)
@@ -105,6 +125,8 @@ async function handle(req: Request): Promise<Response> {
       inserted: 0,
       published: 0,
       drafted: 0,
+      deleted: cleanup.deleted,
+      deletedError: cleanup.error ?? undefined,
     })
   }
 
@@ -117,6 +139,8 @@ async function handle(req: Request): Promise<Response> {
       inserted: 0,
       published: 0,
       drafted: 0,
+      deleted: cleanup.deleted,
+      deletedError: cleanup.error ?? undefined,
     })
   }
 
@@ -124,7 +148,7 @@ async function handle(req: Request): Promise<Response> {
     .from('news_items')
     .upsert(rows, { onConflict: 'url_hash', ignoreDuplicates: true })
   if (error) {
-    return Response.json({ ok: false, reason: error.message }, { status: 500 })
+    return Response.json({ ok: false, reason: error.message, deleted: cleanup.deleted }, { status: 500 })
   }
 
   revalidateTag('news', 'max') // 게시 뉴스 캐시 무효화(stale-while-revalidate)
@@ -135,6 +159,8 @@ async function handle(req: Request): Promise<Response> {
     inserted: rows.length,
     published: rows.filter((r) => r.status === 'published').length,
     drafted: rows.filter((r) => r.status === 'draft').length,
+    deleted: cleanup.deleted,
+    deletedError: cleanup.error ?? undefined,
   })
 }
 

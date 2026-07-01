@@ -132,7 +132,8 @@ async function handle(req: Request): Promise<Response> {
     .from('news_items')
     .upsert(rows, { onConflict: 'url_hash', ignoreDuplicates: true })
   if (error) {
-    return respond({ ok: false, reason: error.message }, cleanup, 500)
+    console.error('[collect-news] upsert 실패:', error.message)
+    return respond({ ok: false, reason: 'upsert 실패' }, cleanup, 500)
   }
 
   revalidateTag('news', 'max') // 게시 뉴스 캐시 무효화(stale-while-revalidate)
